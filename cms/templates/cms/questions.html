@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load filter %}
+
+{% block title %}質問一覧{% endblock title %}
+
+{% block content %}
+    {% for question in questions %}
+        <h4 class="mt-4">{{ question.text }}</h4>
+        {% if question.pk|votes_check:voted_questions %}
+            {% for answer in question.choices.all %}
+                <a href="{% url 'cms:vote' question_pk=question.pk choice_pk=answer.pk %}">{{ answer.choice }}</a>
+            {% endfor %}
+        {% else %}
+            {% for answer in question.choices.all %}
+                <p>{{ answer.choice }}</p>
+            {% endfor %}
+        {% endif %}
+    <a href="{% url 'cms:like' question.pk %}" class="btn btn-secondary btn-sm">いいね！</a>
+    {% endfor %}
+{% endblock content %}

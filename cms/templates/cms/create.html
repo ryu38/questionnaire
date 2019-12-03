@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form action="" method="post">
+    <h2>質問</h2>
+    {{ form.as_p }}
+
+    <h2>選択</h2>
+    {{ choice_formset.management_form }}
+        {% for choice_form in choice_formset %}
+            {{ choice_form.as_p }}
+            <hr>
+        {% endfor %}
+
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">送信</button>
+</form>
+
+{% endblock %}
