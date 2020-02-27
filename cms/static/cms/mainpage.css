@@ -1,0 +1,73 @@
+.container-fluid {
+    margin-top: 60px;
+}
+
+.sheet {
+    padding: 12px;
+    height: 550px
+}
+
+.sheet-content {
+    padding: 15px;
+    height: 100%;
+    background-color: white;
+    border-bottom: solid 1px #87CEFA
+}
+
+.top-area {
+    height: 8%
+}
+
+.timer-wrapper {
+    float: right;
+    font-size: 13px
+}
+
+.question-area {
+    height: 50%;
+    border-bottom: solid 1px #A9A9A9
+}
+
+.choice-area {
+
+}
+
+.result-area {
+
+}
+
+.rate {
+    float: right
+}
+
+#plus {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form__modal {
+    display: none;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+}
+
+.modal__bg {
+    background: rgba(0,0,0,0.8);
+    height: 100vh;
+    position: absolute;
+    width: 100%;
+}
+
+.modal__ct {
+    background: #fff;
+    left: 50%;
+    padding: 40px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    z-index: 1;
+}

@@ -8,13 +8,42 @@
 
     <h2>選択</h2>
     {{ choice_formset.management_form }}
+        <div id="form-choice-area">
         {% for choice_form in choice_formset %}
             {{ choice_form.as_p }}
-            <hr>
         {% endfor %}
+        </div>
 
     {% csrf_token %}
+    <button id="add" type="button" class="btn btn-primary">追加</button>
+    <hr>
     <button type="submit" class="btn btn-primary">送信</button>
 </form>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function() {
+    var totalForms = $('input#id_choices-TOTAL_FORMS');
+    var currentChoicesCount = parseInt(totalForms.val());
+    $('button#add').on('click', function() {
+        var setChoice = $('input.form-control');
+        var name = setChoice.eq(1).attr('name').split('-');
+        const partA = name[0];
+        const partB = name[2];
+
+        var extraChoice = $('<input>', {
+            type:'text',
+            maxlength:setChoice.eq(1).attr('maxlength'),
+            name:partA + '-' + currentChoicesCount + '-' + partB,
+            id:'id_' + partA + '-' + currentChoicesCount + '-' + partB
+        });
+
+        $('#form-choice-area').append(extraChoice);
+        currentChoicesCount += 1;
+        totalForms.attr('value', currentChoicesCount);
+    })
+})
+</script>
 {% endblock %}

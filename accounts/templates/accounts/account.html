@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load filter %}
+
+{% block title %}ユーザー情報{% endblock title %}
+
+{% block content %}
+    <div>{{ information.user.username }}</div>
+    <div>{{ information.age }}</div>
+    <div>{{ information.sex }}</div>
+{% endblock %}

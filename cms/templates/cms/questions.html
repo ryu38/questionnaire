@@ -1,20 +1,314 @@
 {% extends "base.html" %}
 {% load filter %}
+{% load static %}
 
 {% block title %}質問一覧{% endblock title %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'cms/mainpage.css' %}">
+{% endblock %}
+
 {% block content %}
-    {% for question in questions %}
-        <h4 class="mt-4">{{ question.text }}</h4>
-        {% if question.pk|votes_check:voted_questions %}
-            {% for answer in question.choices.all %}
-                <a href="{% url 'cms:vote' question_pk=question.pk choice_pk=answer.pk %}">{{ answer.choice }}</a>
-            {% endfor %}
-        {% else %}
-            {% for answer in question.choices.all %}
-                <p>{{ answer.choice }}</p>
-            {% endfor %}
-        {% endif %}
-    <a href="{% url 'cms:like' question.pk %}" class="btn btn-secondary btn-sm">いいね！</a>
-    {% endfor %}
+<div class="container-fluid">
+<div class="base row mt-1">
+  {% for question, total in questions %}
+      <div class="sheet col-lg-4">
+          <div class="sheet-content shadow-sm">
+            <div class="top-area">
+              <span>user information</span>
+                <span class="timer-wrapper mt-1">残り　<span class="timer"></span></span>
+            </div>
+            <div class="question-area mt-2 mb-3">
+              <p class="question-text">{{ question.text }}</p>
+            </div>
+            <div id="{{ question.pk }}" class="choice-area">
+                {% if question.pk|votes_check:voted_questions %}
+{#                  <div class="btn-group-vertical" role="group">#}
+                    {% for answer in question.choices.all %}
+                        <button id="{{ answer.pk }}" class="btn btn-outline-primary btn-block rounded-pill choice choice-{{ question.pk }}">{{ answer.choice }}</button>
+                    {% endfor %}
+{#                  </div>#}
+                {% else %}
+                    {% for answer in question.choices.all %}
+                        <div class="result-area mt-4 mb-4">
+                          <span>{{ answer.choice }}</span>
+                          {% if answer.pk|your_vote:voted_choices %}
+                              <span>✓</span>
+                          {% endif %}
+                          <span class="rate">{{ answer.vote_num|votes_rate:total }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+{#                <a href="{% url 'cms:like' question.pk %}" class="btn btn-secondary btn-sm">いいね！</a>#}
+            </div>
+          </div>
+      </div>
+  {% endfor %}
+</div>
+<div id="plus">
+  <button class="btn btn-secondary rounded-circle">+</button>
+</div>
+</div>
+
+<div class="form__modal">
+    <div class="modal__bg"></div>
+    <div class="modal__ct">
+        <form id="create" action="{% url 'cms:create' %}" method="post">
+            <h2>質問</h2>
+            {{ form.as_p }}
+
+            <h2>選択</h2>
+            {{ choice_formset.management_form }}
+                <div id="form-choice-area">
+                {% for choice_form in choice_formset %}
+                    {{ choice_form.as_p }}
+                {% endfor %}
+                </div>
+
+            {% csrf_token %}
+            <button id="add" type="button" class="btn btn-primary">追加</button>
+            <hr>
+            <button type="submit" class="btn btn-primary">送信</button>
+        </form>
+    </div>
+</div>
 {% endblock content %}
+
+{% block extra_js %}
+<script>
+$(function() {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $('form#create').submit(function(e) {
+        e.preventDefault();
+        const choicesHtml = $('input[name^="choices"][type="text"]');
+        console.log((choicesHtml));
+        var choicesList = [];
+        choicesHtml.each(function() {
+            const val = choicesHtml.val();
+            choicesList.push(val);
+        });
+        const choices = choicesList.join('/');
+
+        $.ajax({
+            'url': '{% url 'cms:create' %}',
+            'type': 'POST',
+            'data': {
+                'question_text': $('textarea').text(),
+                'choices': choices,
+            },
+            'beforeSend': function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+             }}
+        }).done(function(response) {
+            const createdQuestion = response.created_question;
+            const createdChoices = response.created_choices;
+            console.log(createdQuestion);
+            console.log(createdChoices);
+        })
+    });
+
+    var deadlineList = [];
+    {% for deadline in deadlines %}
+        var endTime = new Date('{{ deadline }}');
+        deadlineList.push(endTime);
+    {% endfor %}
+
+    var localDeadlineList = [];
+    {% for local in local_deadlines %}
+        var localEndTime = new Date('{{ local }}');
+        localDeadlineList.push(localEndTime);
+    {% endfor %}
+
+    var addZero = function(n) {
+        return ('0' + n).slice(-2);
+    };
+
+    function countdownTimer(deadline, local, n) {
+        var nowTime = new Date();
+        if (nowTime > local) { //なぜかifではローカルタイムが考慮されない
+            $('.timer').eq(n).text('expired');
+        } else {
+            var calc =  new Date(deadline - nowTime);//ここでは時間が合わせられる
+            var date = calc.getDate() - 1 ? calc.getDate() - 1 + '日' : ''; //? = if
+            var hours = calc.getHours() ? calc.getHours() + '時間' : '';
+            var minutes = addZero(calc.getMinutes()) + '分';
+            var seconds = addZero(calc.getSeconds()) + '秒';
+            $('.timer').eq(n).text(`${date + hours + minutes + seconds}`);
+        };
+    }
+
+    function repeater() {
+        for (let i = 0; i < deadlineList.length; i++) {
+            countdownTimer(deadlineList[i], localDeadlineList[i], i);
+        }
+    }
+
+    setInterval(repeater, 1000);
+
+    $('button.choice').click(function(e) {
+        e.preventDefault();
+        const selectedPk = $(this).attr('id');
+        const questionPk = $(this).parents('div.choice-area').attr('id');
+        const choiceArea = $(`div#${questionPk}`);
+        const choices = $(`button.choice-${questionPk}`);
+
+        $.ajax({
+            'url': '{% url 'cms:vote' %}',
+            'type': 'GET',
+            'data': {
+                'choice_pk': selectedPk,
+                'question_pk': questionPk,
+            },
+            'dataType': 'json'
+        }).done(function(response) {
+            choiceArea.empty();
+            const votesRateList = response.rates_list;
+
+            for (let i = 0; i < votesRateList.length; i++) {
+                const choiceText = choices.eq(i).text();
+                const choiceId = choices.eq(i).attr('id');
+                choiceArea.append(`
+                      <div class="mt-4 mb-4">
+                        <span>${choiceText}</span>
+                        <span id="vote-check-${choiceId}"></span>
+                        <span style="float: right">${votesRateList[i]}</span>
+                      </div>
+                `);
+                if (choiceId === selectedPk ){
+                    $(`#vote-check-${choiceId}`).text('✓')
+                }
+            }
+        })
+    });
+
+    var loadedCount = 0;
+    $('#plus button').click(function(e) {
+        e.preventDefault();
+        loadedCount += 1;
+
+        let displayedQuestionsPk = [];
+        $('div.choice-area').each(function() {
+            const pk = $(this).attr('id');
+            displayedQuestionsPk.push(pk);
+        });
+        const strDisplayedQuestionsPk = displayedQuestionsPk.join('/');
+
+        $.ajax({
+            'url': '{% url 'cms:add' %}',
+            'type': 'GET',
+            'data': {
+                'loaded_count': loadedCount,
+                'displayed': strDisplayedQuestionsPk,
+            },
+            'dataType': 'json'
+        }).done(function(response) {
+            const zeroCheck = response.not_zero;
+            if (zeroCheck) {
+                const questionPkList = response.question_pk_list;
+                const textList = response.text_list;
+                const choicesList = response.choices_list;
+                const choicePksList = response.choice_pks_list;
+                const ratesList = response.rates_list;
+                const voted_check = response.voted_check;
+
+                for (let i = 0; i < questionPkList.length; i++) {
+                    $('div.base').append(`
+                        <div class="sheet col-lg-4">
+                          <div class="sheet-content shadow-sm">
+                            <div class="top-area">
+                              <span>user information</span>
+                                <span class="timer-wrapper mt-1">残り　<span class="timer"></span></span>
+                            </div>
+                            <div class="question-area mt-2 mb-3">
+                              <p class="question-text">${textList[i]}</p>
+                            </div>
+                            <div id="${questionPkList[i]}" class="choice-area">
+                            </div>
+                          </div>
+                        </div>
+                    `);
+                    if (voted_check[i]) {
+                        for (let j = 0; j < choicePksList[i].length; j++) {
+                            $(`div#${questionPkList[i]}`).append(`
+                                <button id="${choicePksList[i][j]}" class="btn btn-outline-primary btn-block rounded-pill choice-${questionPkList[i]}">${choicesList[i][j]}</button>
+                            `)
+                        }
+                    } else {
+                        for (let j = 0; j < choicePksList[i].length; j++) {
+                            $(`div#${questionPkList[i]}`).append(`
+                                <div class="mt-4 mb-4">
+                                    <span>${choicesList[i][j]}</span>
+                                    <span id="vote-check-${choicePksList[i][j]}"></span>
+                                    <span style="float: right">${ratesList[i][j]}</span>
+                                </div>
+                            `)
+                        }
+                    }
+                }
+            }else {
+                $('#plus').empty();
+            }
+        })
+    })
+
+    var totalForms = $('input#id_choices-TOTAL_FORMS');
+    var currentChoicesCount = parseInt(totalForms.val());
+    $('button#add').on('click', function() {
+        var setChoice = $('input.form-control');
+        var name = setChoice.eq(1).attr('name').split('-');
+        const partA = name[0];
+        const partB = name[2];
+
+        var extraChoice = $('<input>', {
+            type: 'text',
+            maxlength: setChoice.eq(1).attr('maxlength'),
+            name: partA + '-' + currentChoicesCount + '-' + partB,
+            id: 'id_' + partA + '-' + currentChoicesCount + '-' + partB
+        });
+
+        $('#form-choice-area').append(extraChoice);
+        currentChoicesCount += 1;
+        totalForms.attr('value', currentChoicesCount);
+    });
+
+    $('#form-open').on('click',function(e){
+        e.preventDefault();
+        $('.form__modal').fadeIn();
+        pos = $(window).scrollTop();
+        $('.container-fluid').css({
+            'position': 'fixed',
+            'top': -1*pos
+        })
+    });
+    $('.modal__bg').on('click',function(e){
+        e.preventDefault();
+        $('.form__modal').fadeOut();
+        $('.container-fluid').attr('style', '');
+        $('html, body').prop({scrollTop: pos});
+    });
+});
+</script>
+{% endblock %}

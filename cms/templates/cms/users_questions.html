@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load filter %}
+
+{% block title %}質問一覧{% endblock title %}
+
+{% block content %}
+<div class="row mt-1">
+  {% for question, total in questions %}
+      <div class="col-lg-4" style="padding: 12px;height: 550px">
+          <div class="shadow-sm" style="padding: 15px;height: 100%;background-color: white;border-bottom: solid 1px #87CEFA">
+            <div style="height: 8%">
+              <span>user information</span>
+                <span class="mt-1" style="float: right; font-size: 13px">残り　<span class="timer"></span></span>
+            </div>
+            <div class="mt-2 mb-3" style="height: 50%;border-bottom: solid 1px #A9A9A9">
+              <p class="question-text">{{ question.text }}</p>
+            </div>
+            <div>
+                {% if question.pk|votes_check:voted_questions %}
+{#                  <div class="btn-group-vertical" role="group">#}
+                    {% for answer in question.choices.all %}
+                        <a href="{% url 'cms:vote' question_pk=question.pk choice_pk=answer.pk %}" class="btn btn-outline-primary btn-block rounded-pill">{{ answer.choice }}</a>
+                    {% endfor %}
+{#                  </div>#}
+                {% else %}
+                    {% for answer in question.choices.all %}
+                        <div class="mt-4 mb-4">
+                          <span>{{ answer.choice }}</span>
+                          {% if answer.pk|your_vote:voted_choices %}
+                              <span>✓</span>
+                          {% endif %}
+                          <span style="float: right">{{ answer.vote_num|votes_rate:total }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+{#                <a href="{% url 'cms:like' question.pk %}" class="btn btn-secondary btn-sm">いいね！</a>#}
+            </div>
+          </div>
+      </div>
+  {% endfor %}
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+$(function() {
+    var deadlineList = [];
+    {% for deadline in deadlines %}
+        var endTime = new Date('{{ deadline }}');
+        deadlineList.push(endTime);
+    {% endfor %}
+
+    var localDeadlineList = [];
+    {% for local in local_deadlines %}
+        var localEndTime = new Date('{{ local }}');
+        localDeadlineList.push(localEndTime);
+    {% endfor %}
+
+   var addZero = function(n) {
+        return ('0' + n).slice(-2);
+    };
+
+    function countdownTimer(deadline, local, n) {
+        var nowTime = new Date();
+        if (nowTime > local) { //なぜかifではローカルタイムが考慮されない
+            $('.timer').eq(n).text('expired');
+        } else {
+            var calc =  new Date(deadline - nowTime);//ここでは時間が合わせられる
+            var date = calc.getDate() - 1 ? calc.getDate() - 1 + '日' : ''; //? = if
+            var hours = calc.getHours() ? calc.getHours() + '時間' : '';
+            var minutes = addZero(calc.getMinutes()) + '分';
+            var seconds = addZero(calc.getSeconds()) + '秒';
+            $('.timer').eq(n).text(`${date + hours + minutes + seconds}`);
+        };
+    }
+
+    function repeater() {
+        for (var i = 0; i < deadlineList.length; i++) {
+            countdownTimer(deadlineList[i], localDeadlineList[i], i);
+        }
+    }
+
+    setInterval(repeater, 1000)
+
+});
+</script>
+{% endblock %}

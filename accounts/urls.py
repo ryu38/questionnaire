@@ -8,4 +8,5 @@ app_name = 'accounts'
 urlpatterns = [
     # ex: /accounts/signup/
     path('signup/', views.SignUpView.as_view(), name='signup'),
+    path('information/', views.Information.as_view(), name='account')
 ]

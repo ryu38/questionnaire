@@ -13,6 +13,7 @@ class Question(models.Model):
     date_created = models.DateTimeField(verbose_name='投稿日時', default=timezone.now)
     like_num = models.IntegerField(verbose_name='いいね！', default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='question_create_user', null=True)
+    expired = models.BooleanField(verbose_name='締め切り', default=False)
 
     def __str__(self):
         return self.text
