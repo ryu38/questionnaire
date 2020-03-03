@@ -11,7 +11,7 @@
     padding: 15px;
     height: 100%;
     background-color: white;
-    border-bottom: solid 1px #87CEFA
+    /*border-bottom: solid 1px #87CEFA*/
 }
 
 .top-area {
@@ -24,15 +24,11 @@
 }
 
 .question-area {
-    height: 50%;
+    height: 48%;
     border-bottom: solid 1px #A9A9A9
 }
 
 .choice-area {
-
-}
-
-.result-area {
 
 }
 
@@ -70,4 +66,120 @@
     transform: translate(-50%, -50%);
     width: 60%;
     z-index: 1;
+}
+
+button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+a.choice {
+    position: relative;
+    display: block;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    border-left: solid 0.1em hsla(200,30%,70%,1);
+    color: hsla(180,0%,50%,1);
+    background: hsla(200,20%,98%,1);
+    transition: .1s;
+    margin-top: 0.7em;
+    font-weight: lighter;
+
+    /*ボタン用*/
+    /*width: 100%;*/
+    /*text-align: left;*/
+}
+
+a.choice:hover {
+    /*background: hsla(180,60%,50%,1);*/
+    color: hsla(180,60%,50%,1);
+    border-left: solid 0.3em hsla(180,60%,50%,1);
+    padding: 0.5em 1em 0.5em 0.8em;
+    background-color: hsla(180,100%,98%,1);
+}
+
+.result-area {
+    position: relative;
+    padding: 0.3em 1em 0.3em 1.1em;
+    text-decoration: none;
+    color: hsla(180,0%,30%,1);
+    margin-top: 1.1em;
+    font-weight: lighter;
+    /*animation: graph 3s ease 1 forwards;*/
+    /*background:linear-gradient(90deg,*/
+    /*                        hsla(200,30%,80%,1) 0%,hsla(200,30%,80%,1) 50%,*/
+    /*                        hsla(200,20%,98%,1) 50%,hsla(200,20%,98%,1) 100%);*/
+    /*background-size: 200% 100%;*/
+}
+
+@-webkit-keyframes graph {
+    0% {background-position: 100% 0}
+    100% {background-position: 0 0}
+}
+
+/*.choice__text {*/
+/*    float: left;*/
+/*}*/
+
+/*.your__vote {*/
+/*    float: left;*/
+/*}*/
+
+a#add {
+    position: relative;
+    top: -25px;
+    text-decoration: none;
+    color: hsla(180,0%,50%,1);
+    transition: .1s;
+    font-weight: bolder;
+    font-size: 3em;
+}
+
+a#add:hover {
+    color: hsla(180,60%,50%,1);
+}
+
+div#add__area {
+    height: 30px;
+}
+
+button.form__submit {
+    padding: 0.5em 1em;
+    text-decoration: none;
+    border: solid 0.1em hsla(180,60%,50%,1);
+    color: hsla(180,60%,50%,1);
+    background: hsla(180,0%,100%,1);
+    transition: .1s;
+    font-weight: lighter;
+    display: block;
+    margin: 0.7em 0 0 auto;
+}
+
+button.form__submit:hover {
+    /*color: hsla(180,60%,50%,1);*/
+    /*border-left: solid 0.3em hsla(180,60%,50%,1);*/
+    /*padding: 0.5em 1em 0.5em 0.8em;*/
+    /*background-color: hsla(180,100%,98%,1);*/
+    color: hsla(0,0%,100%,1);
+    background-color: hsla(180,60%,50%,1);
+    border-color: hsla(180,60%,50%,1);
+}
+
+div#deadline {
+    margin-bottom: 1em;
+}
+
+div#deadline span {
+    margin-right: 1em;
+    display: inline-block;
+}
+
+div#deadline select.form-control {
+    display: inline-block;
+    width: auto;
 }

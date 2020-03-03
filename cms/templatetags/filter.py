@@ -15,7 +15,8 @@ def votes_check(question_id, voted_questions):
 
 @register.filter(name='votes_rate')
 def votes_rate(vote_num, total):
-    result = '{:.0%}'.format(vote_num / total)
+    result = round(vote_num*100 / total)
+    # result = '{:.0%}'.format(vote_num / total)
     # result = str(vote_num) + '/' + str(total)
     return result
 

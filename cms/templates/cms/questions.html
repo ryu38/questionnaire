@@ -13,7 +13,7 @@
 <div class="base row mt-1">
   {% for question, total in questions %}
       <div class="sheet col-lg-4">
-          <div class="sheet-content shadow-sm">
+          <div class="sheet-content shadow-sm rounded-lg">
             <div class="top-area">
               <span>user information</span>
                 <span class="timer-wrapper mt-1">残り　<span class="timer"></span></span>
@@ -25,18 +25,27 @@
                 {% if question.pk|votes_check:voted_questions %}
 {#                  <div class="btn-group-vertical" role="group">#}
                     {% for answer in question.choices.all %}
-                        <button id="{{ answer.pk }}" class="btn btn-outline-primary btn-block rounded-pill choice choice-{{ question.pk }}">{{ answer.choice }}</button>
+                        <a href="#" id="{{ answer.pk }}" class="choice choice-{{ question.pk }}">{{ answer.choice }}</a>
                     {% endfor %}
 {#                  </div>#}
                 {% else %}
                     {% for answer in question.choices.all %}
-                        <div class="result-area mt-4 mb-4">
-                          <span>{{ answer.choice }}</span>
-                          {% if answer.pk|your_vote:voted_choices %}
-                              <span>✓</span>
-                          {% endif %}
-                          <span class="rate">{{ answer.vote_num|votes_rate:total }}</span>
-                        </div>
+                        {% if answer.pk|your_vote:voted_choices %}
+                            <div class="result-area" style="
+                                    background:linear-gradient(90deg,
+                                    hsla(180,60%,50%,1) 0%,hsla(180,60%,50%,1) {{ answer.vote_num|votes_rate:total }}%,
+                                    hsla(180,100%,98%,1) {{ answer.vote_num|votes_rate:total }}%,hsla(180,100%,98%,1) 100%);
+                            ">
+                        {% else %}
+                            <div class="result-area" style="
+                                    background:linear-gradient(90deg,
+                                    hsla(200,30%,80%,1) 0%,hsla(200,30%,80%,1) {{ answer.vote_num|votes_rate:total }}%,
+                                    hsla(200,20%,98%,1) {{ answer.vote_num|votes_rate:total }}%,hsla(200,20%,98%,1) 100%);
+                            ">
+                        {% endif %}
+                              <span class="choice__text">{{ answer.choice }}</span>
+                              <span class="rate">{{ answer.vote_num|votes_rate:total }}%</span>
+                            </div>
                     {% endfor %}
                 {% endif %}
 {#                <a href="{% url 'cms:like' question.pk %}" class="btn btn-secondary btn-sm">いいね！</a>#}
@@ -53,11 +62,19 @@
 <div class="form__modal">
     <div class="modal__bg"></div>
     <div class="modal__ct">
-        <form id="create" action="{% url 'cms:create' %}" method="post">
-            <h2>質問</h2>
+        <form id="create" method="post">
+            <div id="deadline">
+                <h6>Deadline</h6>
+                <select class="form-control" name="day"><option value="" disabled selected>日</option></select>
+                <select class="form-control" name="hour"><option value="" disabled selected>時</option></select>
+                <select class="form-control" name="minute"><option value="" disabled selected>分</option></select>
+            </div>
+            <hr>
+
+            <h5>Question</h5>
             {{ form.as_p }}
 
-            <h2>選択</h2>
+            <h5>Choices</h5>
             {{ choice_formset.management_form }}
                 <div id="form-choice-area">
                 {% for choice_form in choice_formset %}
@@ -66,9 +83,11 @@
                 </div>
 
             {% csrf_token %}
-            <button id="add" type="button" class="btn btn-primary">追加</button>
+            <div id="add__area">
+                <a href="#" id="add">+</a>
+            </div>
             <hr>
-            <button type="submit" class="btn btn-primary">送信</button>
+            <button type="submit" class="form__submit">POST</button>
         </form>
     </div>
 </div>
@@ -77,6 +96,21 @@
 {% block extra_js %}
 <script>
 $(function() {
+    $('label').hide();
+    $('textarea').attr('placeholder', '質問を入力してください');
+    $('input#id_choices-0-choice').attr('placeholder', '回答１');
+    $('input#id_choices-1-choice').attr('placeholder', '回答２');
+
+    for (let i = 0; i < 4; i++) {
+        $('select[name="minute"]').append($('<option>').val(`${15*i}`).text(`${15*i}`).attr('size', '5'))
+    }
+    for (let i = 0; i < 24; i++) {
+        $('select[name="hour"]').append($('<option>').val(`${1*i}`).text(`${1*i}`))
+    }
+    for (let i = 0; i < 7; i++) {
+        $('select[name="day"]').append($('<option>').val(`${1*i}`).text(`${1*i}`))
+    }
+
     function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -102,32 +136,54 @@ $(function() {
 
     $('form#create').submit(function(e) {
         e.preventDefault();
-        const choicesHtml = $('input[name^="choices"][type="text"]');
-        console.log((choicesHtml));
-        var choicesList = [];
-        choicesHtml.each(function() {
-            const val = choicesHtml.val();
-            choicesList.push(val);
-        });
-        const choices = choicesList.join('/');
+        {#const choicesHtml = $('input[name^="choices"][type="text"]');#}
+        {#var choicesList = [];#}
+        {#choicesHtml.each(function() {#}
+        {#const val = $(this).val();#}
+        {#    choicesList.push(val);#}
+        {# });#}
+        {#const choices = choicesList.join('/');#}
+        {#console.log(choices);#}
 
-        $.ajax({
-            'url': '{% url 'cms:create' %}',
-            'type': 'POST',
-            'data': {
-                'question_text': $('textarea').text(),
-                'choices': choices,
-            },
-            'beforeSend': function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-             }}
-        }).done(function(response) {
-            const createdQuestion = response.created_question;
-            const createdChoices = response.created_choices;
-            console.log(createdQuestion);
-            console.log(createdChoices);
-        })
+        const setChoicesHtml = $('input[name^="choices"][type="text"]');
+        let setChoices = [];
+        setChoicesHtml.each(function() {
+            setChoices.push($(this).val())
+        });
+        setChoices = setChoices.filter(Boolean);
+
+        if (setChoices.length >= 2) {
+            $.ajax({
+                'url': '{% url 'cms:form' %}',
+                'type': 'POST',
+                'data': $(this).serialize(),
+                'beforeSend': function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                 }}
+            }).done(function(response) {
+                $('.form__modal').fadeOut();
+                $('.container-fluid').attr('style', '');
+                $('html, body').prop({scrollTop: pos});
+                $('textarea').val('');
+                const choicesHtml = $('input[name^="choices"][type="text"]');
+                choicesHtml.each(function() {
+                   $(this).val('');
+                });
+                $('div#form-choice-area').popover('dispose');
+
+                const created = response.created;
+                const problem = response.problem;
+                console.log(created);
+                console.log(problem);
+            })
+        } else {
+            $('div#form-choice-area').popover({
+                content: '質問は２つ以上必要です',
+                placement: 'bottom',
+            });
+            $('div#form-choice-area').popover('show');
+        }
     });
 
     var deadlineList = [];
@@ -165,44 +221,7 @@ $(function() {
             countdownTimer(deadlineList[i], localDeadlineList[i], i);
         }
     }
-
     setInterval(repeater, 1000);
-
-    $('button.choice').click(function(e) {
-        e.preventDefault();
-        const selectedPk = $(this).attr('id');
-        const questionPk = $(this).parents('div.choice-area').attr('id');
-        const choiceArea = $(`div#${questionPk}`);
-        const choices = $(`button.choice-${questionPk}`);
-
-        $.ajax({
-            'url': '{% url 'cms:vote' %}',
-            'type': 'GET',
-            'data': {
-                'choice_pk': selectedPk,
-                'question_pk': questionPk,
-            },
-            'dataType': 'json'
-        }).done(function(response) {
-            choiceArea.empty();
-            const votesRateList = response.rates_list;
-
-            for (let i = 0; i < votesRateList.length; i++) {
-                const choiceText = choices.eq(i).text();
-                const choiceId = choices.eq(i).attr('id');
-                choiceArea.append(`
-                      <div class="mt-4 mb-4">
-                        <span>${choiceText}</span>
-                        <span id="vote-check-${choiceId}"></span>
-                        <span style="float: right">${votesRateList[i]}</span>
-                      </div>
-                `);
-                if (choiceId === selectedPk ){
-                    $(`#vote-check-${choiceId}`).text('✓')
-                }
-            }
-        })
-    });
 
     var loadedCount = 0;
     $('#plus button').click(function(e) {
@@ -232,7 +251,8 @@ $(function() {
                 const choicesList = response.choices_list;
                 const choicePksList = response.choice_pks_list;
                 const ratesList = response.rates_list;
-                const voted_check = response.voted_check;
+                const votedCheck = response.voted_check;
+                const votedChoicePks = response.voted_choice_pks;
 
                 for (let i = 0; i < questionPkList.length; i++) {
                     $('div.base').append(`
@@ -250,21 +270,34 @@ $(function() {
                           </div>
                         </div>
                     `);
-                    if (voted_check[i]) {
+                    if (votedCheck[i]) {
                         for (let j = 0; j < choicePksList[i].length; j++) {
                             $(`div#${questionPkList[i]}`).append(`
-                                <button id="${choicePksList[i][j]}" class="btn btn-outline-primary btn-block rounded-pill choice-${questionPkList[i]}">${choicesList[i][j]}</button>
+                                <a href="#" id="${choicePksList[i][j]}" class="choice choice-${questionPkList[i]}">${choicesList[i][j]}</button>
                             `)
                         }
                     } else {
                         for (let j = 0; j < choicePksList[i].length; j++) {
                             $(`div#${questionPkList[i]}`).append(`
-                                <div class="mt-4 mb-4">
-                                    <span>${choicesList[i][j]}</span>
-                                    <span id="vote-check-${choicePksList[i][j]}"></span>
-                                    <span style="float: right">${ratesList[i][j]}</span>
+                                <div class="result-area"  id="result__${choicePksList[i][j]}">
+                                    <span class="choice__text">${choicesList[i][j]}</span>
+                                    <span class="rate">${ratesList[i][j]}%</span>
                                 </div>
-                            `)
+                            `);
+                            const eachResultArea = $(`#result__${choicePksList[i][j]}`);
+                            if(votedChoicePks.indexOf(choicePksList[i][j]) !== -1 ) {
+                                eachResultArea.css({
+                                    'background': `linear-gradient(90deg,
+                                    hsla(180,60%,50%,1) 0%,hsla(180,60%,50%,1) ${ratesList[i][j]}%,
+                                    hsla(180,100%,98%,1) ${ratesList[i][j]}%,hsla(180,100%,98%,1) 100%)`
+                                });
+                            } else {
+                                eachResultArea.css({
+                                    'background': `linear-gradient(90deg,
+                                    hsla(200,30%,80%,1) 0%,hsla(200,30%,80%,1) ${ratesList[i][j]}%,
+                                    hsla(200,20%,98%,1) ${ratesList[i][j]}%,hsla(200,20%,98%,1) 100%)`
+                                });
+                            }
                         }
                     }
                 }
@@ -272,11 +305,63 @@ $(function() {
                 $('#plus').empty();
             }
         })
-    })
+    });
+
+    // 後から追加した質問にも対応できる記述↓
+    $(document).on('click', 'a.choice', function(e) {
+        e.preventDefault();
+        const selectedPk = $(this).attr('id');
+        const questionPk = $(this).parents('div.choice-area').attr('id');
+        const choiceArea = $(`div#${questionPk}`);
+        const choices = $(`a.choice-${questionPk}`);
+
+        $.ajax({
+            'url': '{% url 'cms:vote' %}',
+            'type': 'GET',
+            'data': {
+                'choice_pk': selectedPk,
+                'question_pk': questionPk,
+            },
+            'dataType': 'json'
+        }).done(function(response) {
+            choiceArea.empty();
+            const votesRateList = response.rates_list;
+
+            for (let i = 0; i < votesRateList.length; i++) {
+                const choiceText = choices.eq(i).text();
+                const choiceId = choices.eq(i).attr('id');
+                choiceArea.append(`
+                      <div class="result-area"  id="result__${choiceId}">
+                        <span class="choice__text">${choiceText}</span>
+                        <span style="float: right">${votesRateList[i]}%</span>
+                      </div>
+                `);
+                const eachResultArea = $(`#result__${choiceId}`);
+                if (choiceId === selectedPk ){
+                    eachResultArea.css({
+                    'background': `linear-gradient(90deg,
+                                    hsla(180,60%,50%,1) 0%,hsla(180,60%,50%,1) ${votesRateList[i]/2}%,
+                                    hsla(180,100%,98%,1) ${votesRateList[i]/2}%,hsla(180,100%,98%,1) 100%)`,
+                    'background-size': `200% 100%`,
+                    'animation': 'graph 1s ease 1 forwards'
+                    });
+                } else {
+                    eachResultArea.css({
+                    'background': `linear-gradient(90deg,
+                                    hsla(200,30%,80%,1) 0%,hsla(200,30%,80%,1) ${votesRateList[i]/2}%,
+                                    hsla(200,20%,98%,1) ${votesRateList[i]/2}%,hsla(200,20%,98%,1) 100%)`,
+                    'background-size': `200% 100%`,
+                    'animation': 'graph 1s ease 1 forwards'
+                    });
+                }
+            }
+        })
+    });
 
     var totalForms = $('input#id_choices-TOTAL_FORMS');
     var currentChoicesCount = parseInt(totalForms.val());
-    $('button#add').on('click', function() {
+    $('a#add').click(function(e) {
+        e.preventDefault();
         var setChoice = $('input.form-control');
         var name = setChoice.eq(1).attr('name').split('-');
         const partA = name[0];
@@ -286,11 +371,19 @@ $(function() {
             type: 'text',
             maxlength: setChoice.eq(1).attr('maxlength'),
             name: partA + '-' + currentChoicesCount + '-' + partB,
-            id: 'id_' + partA + '-' + currentChoicesCount + '-' + partB
+            id: 'id_' + partA + '-' + currentChoicesCount + '-' + partB,
+            class: 'form-control',
+            placeholder: `回答${currentChoicesCount+1}`,
+        });
+        extraChoice.css({
+            'margin-bottom': '16px'
         });
 
         $('#form-choice-area').append(extraChoice);
         currentChoicesCount += 1;
+        if (currentChoicesCount === 4) {
+            $('div#add__area').remove();
+        }
         totalForms.attr('value', currentChoicesCount);
     });
 
@@ -308,6 +401,7 @@ $(function() {
         $('.form__modal').fadeOut();
         $('.container-fluid').attr('style', '');
         $('html, body').prop({scrollTop: pos});
+        $('div#form-choice-area').popover('dispose');
     });
 });
 </script>

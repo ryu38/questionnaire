@@ -25,7 +25,7 @@ class Choice(models.Model):
         verbose_name_plural = '選択リスト'
 
     question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
-    choice = models.CharField(verbose_name='選択', max_length=50)
+    choice = models.CharField(verbose_name='選択', max_length=50, blank=False)
     vote_num = models.IntegerField(verbose_name='投票数', default=0)
 
     def __str__(self):

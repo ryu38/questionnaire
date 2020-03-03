@@ -19,5 +19,5 @@ class QuestionForm(forms.ModelForm):
 
 ChoiceFormset = forms.inlineformset_factory(
     Question, Choice, form=QuestionForm, fields=('choice',),
-    extra=2, can_delete=False,
+    extra=2, can_delete=False, max_num=4
 )

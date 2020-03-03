@@ -93,30 +93,47 @@ class QuestionList(TemplateView):
 
 def create(request):
     # HttpResponse('ok')
-    question_text = request.POST.get('question_text')
-    str_choices = request.POST.get('choices')
-    choices = str_choices.split('/')
-    print(question_text)
-    print(choices)
+    # print(request.POST)
+    # # question = Question()
+    # # question.text = question_text
+    # # question.user = request
+    # # question.save()
+    # #
+    # # created_question = Question.objects.get(user=request.user)
+    # #
+    # # for answer in choices:
+    # #     choice = Choice()
+    # #     choice.choice = answer
+    # #     choice.question = created_question
+    # #     choice.save()
+    #
+    form = QuestionForm(request.POST)
+    if form.is_valid():
+        question = form.save(commit=False)
+        choice_formset = ChoiceFormset(request.POST, instance=question)
+        print()
 
-    question = Question()
-    question.text = question_text
-    question.user = request
-    question.save()
+        if choice_formset.is_valid():
+            question.user = request.user
+            question.save()
+            choice_formset.save()
+            print('成功！')
+            ctx = {
+                'created': 1,
+                'problem': 0
+            }
+            return JsonResponse(ctx)
 
-    created_question = Question.objects.get(user=request.user)
-
-    for answer in choices:
-        choice = Choice()
-        choice.choice = answer
-        choice.question = created_question
-        choice.save()
+        else:
+            problem = 'choice'
+    else:
+        problem = 'question'
 
     ctx = {
-        'created_question': created_question.text,
-        'created_choices': list(Choice.objects.filter(question=created_question).values_list('choice', flat=True))
+        'created': 0,
+        'problem': problem
     }
-    ctx.update(csrf(request))
+    print('失敗！')
 
     return JsonResponse(ctx)
 
@@ -125,6 +142,7 @@ def add_question(request):
     c = int(request.GET.get('loaded_count'))
     str_displayed_questions_pk = request.GET.get('displayed')
     displayed_questions_pk = str_displayed_questions_pk.split('/')
+    print(displayed_questions_pk)
 
     additional_questions = Question.objects.filter(expired=False).exclude(pk__in=displayed_questions_pk)[:6]
     if additional_questions.count():
@@ -145,18 +163,20 @@ def add_question(request):
             rate_list = []
             if total:
                 for i in votes_num_list:
-                    result = '{:.0%}'.format(i / total)
+                    result = round(i*100 / total)
                     rate_list.append(result)
             else:
                 for i in votes_num_list:
-                    rate_list.append('0%')
+                    rate_list.append(0)
             rates_list.append(rate_list)
 
         if request.user.is_authenticated:
             votes = Vote.objects.filter(user=request.user)
             voted_questions = list(votes.values_list('question_id', flat=True))
+            voted_choice_pks = list(votes.values_list('choice_id', flat=True))
         else:
             voted_questions = []
+            voted_choice_pks = []
 
         voted_check = []
         for question in pk_list:
@@ -172,6 +192,7 @@ def add_question(request):
             'choice_pks_list': choice_pks_list,
             'rates_list': rates_list,
             'voted_check': voted_check,
+            'voted_choice_pks': voted_choice_pks,
             'not_zero': 1,
         }
 
@@ -283,7 +304,7 @@ def vote(request):
 
     rates_list = []
     for i in votes_num_list:
-        result = '{:.0%}'.format(i / total)
+        result = round(i*100 / total)
         rates_list.append(result)
 
     ctx = {

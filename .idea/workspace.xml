@@ -2,25 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7ef11c7-2b35-448c-b1fb-2ec8a1d80873" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/accounts/my_context_processor.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/accounts/templates/accounts/account.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cms/static/cms/mainpage.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cms/templates/cms/users_questions.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/css/base.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/templates/accounts/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/templates/accounts/signup.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cms/form.py" beforeDir="false" afterPath="$PROJECT_DIR$/cms/form.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cms/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/cms/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cms/templates/cms/create.html" beforeDir="false" afterPath="$PROJECT_DIR$/cms/templates/cms/create.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cms/static/cms/mainpage.css" beforeDir="false" afterPath="$PROJECT_DIR$/cms/static/cms/mainpage.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cms/templates/cms/questions.html" beforeDir="false" afterPath="$PROJECT_DIR$/cms/templates/cms/questions.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cms/templatetags/filter.py" beforeDir="false" afterPath="$PROJECT_DIR$/cms/templatetags/filter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cms/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/cms/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cms/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/cms/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/questionnaire/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/questionnaire/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/registration/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/registration/login.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -124,7 +115,7 @@
       <workItem from="1579399853560" duration="25784000" />
       <workItem from="1581562676495" duration="10386000" />
       <workItem from="1581745486574" duration="13204000" />
-      <workItem from="1581922818640" duration="191710000" />
+      <workItem from="1581922818640" duration="282127000" />
     </task>
     <servers />
   </component>

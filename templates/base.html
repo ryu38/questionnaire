@@ -5,19 +5,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<link href="https://fonts.googleapis.com/css?family=Lato:400,700|Noto+Sans+JP:400,700" rel="stylesheet">
 {% block extra_css %}{% endblock %}
 <title>{% block title %}Quiction{% endblock %}</title>
 </head>
-<body style="background-color: whitesmoke">
-<div id="header__nav" style="position: fixed; width: 100%; z-index: 1; top: 0">
-<nav class="navbar navbar-expand-lg navbar-light shadow-sm" style="border-bottom: solid 1px #87CEFA; background-color: white;">
-  <a class="navbar-brand" href="{% url 'cms:question_list' %}">Quiction</a>
+<body>
+<div id="header__nav">
+<nav class="navbar navbar-expand-lg navbar-light shadow-sm p-2 pl-5 pr-5">
+  <div id="brand">
+    <img src="../static/img/lightning.png" id="logo">
+      <a class="navbar-brand m-0" href="{% url 'cms:question_list' %}"><span class="skyblue">Quic</span>tion</a>
+  </div>
 {#  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">#}
 {#   <span class="navbar-toggler-icon"></span>#}
 {#  </button>#}
-　{% if user.is_authenticated %}
-    <div class="ml-3">{{ user_information.user.username }}</div>
-　{% endif %}
   <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
     <ul class="navbar-nav">
         {% if user.is_authenticated %}
@@ -31,6 +33,9 @@
           <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">ログイン</a></li>
         {% endif %}
     </ul>
+    {% if user.is_authenticated %}
+        <div class="ml-3">{{ user_information.user.username }}</div>
+　  {% endif %}
   </div>
 </nav>
 </div>
