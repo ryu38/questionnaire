@@ -40,24 +40,24 @@ class QuestionList(TemplateView):
             ctx['voted_questions'] = []
             ctx['voted_choices'] = []
 
-        voted_dates = list(questions.values_list('date_created', flat=True))
-        remain_time = datetime.timedelta(days=1)
+        voted_date = list(questions.values_list('date_created', flat=True))
+        deadline_date = list(questions.values_list('deadline', flat=True))
         localdates = []
         strfdates = []
         localdeadlines = []
         deadlines = []
-        for date in voted_dates:
+        for date, deadline in zip(voted_date, deadline_date):
             local_date = localtime(date)
             strfdates.append(date.strftime('%Y/%m/%d %H:%M:%S'))
             localdates.append(local_date.strftime('%Y/%m/%d %H:%M:%S'))
-            deadline = date + remain_time
+
+            local_deadline = localtime(deadline)
             deadlines.append(deadline.strftime('%Y/%m/%d %H:%M:%S'))
-            localdeadline = localtime(deadline)
-            localdeadlines.append(localdeadline.strftime('%Y/%m/%d %H:%M:%S'))
+            localdeadlines.append(local_deadline.strftime('%Y/%m/%d %H:%M:%S'))
         dates_lists = [strfdates, deadlines, localdates, localdeadlines]
 
         for i, question in enumerate(questions):
-            if voted_dates[i] + remain_time <= timezone.now():
+            if deadline_date[i] <= timezone.now():
                 question.expired = True
                 question.save()
         # 期限切れソート
@@ -111,10 +111,14 @@ def create(request):
     if form.is_valid():
         question = form.save(commit=False)
         choice_formset = ChoiceFormset(request.POST, instance=question)
-        print()
+        print(request.POST)
 
         if choice_formset.is_valid():
             question.user = request.user
+            day = int(request.POST.get('day'))
+            hour = int(request.POST.get('hour'))
+            minute = int(request.POST.get('minute'))
+            question.deadline = timezone.now() + timezone.timedelta(days=day, hours=hour, minutes=minute)
             question.save()
             choice_formset.save()
             print('成功！')

@@ -1,10 +1,33 @@
 {% extends "base.html" %}
 {% load filter %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/account.css' %}">
+{% endblock %}
 
 {% block title %}ユーザー情報{% endblock title %}
 
 {% block content %}
-    <div>{{ information.user.username }}</div>
-    <div>{{ information.age }}</div>
-    <div>{{ information.sex }}</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="sheet__base col-lg-5">
+            <div class="sheet shadow-sm">
+            </div>
+        </div>
+        <div class="sheet__base col-lg-7">
+            <div class="sheet shadow-sm">
+                <h1>PROFILE</h1>
+                <hr>
+                <div><span class="__label">Name</span><span class="__information">{{ information.user.username }}</span></div>
+                <hr>
+                <div><span class="__label">Age</span><span class="__information">{{ information.age }}</span></div>
+                <hr>
+                <div><span class="__label">Gender</span><span class="__information">{{ information.sex }}</span></div>
+                <hr>
+                <div id="to__edit"><a href="#">プロフィールを編集</a></div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

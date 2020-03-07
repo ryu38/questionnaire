@@ -41,7 +41,7 @@
     margin-bottom: 20px;
 }
 
-.form__modal {
+.__modal {
     display: none;
     height: 100vh;
     position: fixed;

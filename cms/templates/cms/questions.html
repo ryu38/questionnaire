@@ -5,7 +5,7 @@
 {% block title %}質問一覧{% endblock title %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'cms/mainpage.css' %}">
+<link rel="stylesheet" href="{% static 'cms/questions.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -59,12 +59,12 @@
 </div>
 </div>
 
-<div class="form__modal">
+<div class="__modal form__modal">
     <div class="modal__bg"></div>
     <div class="modal__ct">
         <form id="create" method="post">
             <div id="deadline">
-                <h6>Deadline</h6>
+                <h5>Deadline</h5>
                 <select class="form-control" name="day"><option value="" disabled selected>日</option></select>
                 <select class="form-control" name="hour"><option value="" disabled selected>時</option></select>
                 <select class="form-control" name="minute"><option value="" disabled selected>分</option></select>
@@ -98,8 +98,12 @@
 $(function() {
     $('label').hide();
     $('textarea').attr('placeholder', '質問を入力してください');
-    $('input#id_choices-0-choice').attr('placeholder', '回答１');
-    $('input#id_choices-1-choice').attr('placeholder', '回答２');
+    for (let i = 0; i < 2; i++) {
+        $(`input#id_choices-${i}-choice`).attr({
+            'placeholder': `回答${i+1}`,
+            'autocomplete': 'off'
+        });
+    }
 
     for (let i = 0; i < 4; i++) {
         $('select[name="minute"]').append($('<option>').val(`${15*i}`).text(`${15*i}`).attr('size', '5'))
@@ -152,7 +156,10 @@ $(function() {
         });
         setChoices = setChoices.filter(Boolean);
 
-        if (setChoices.length >= 2) {
+        const deadlineChecker = Number($('select[name="day"]').val() + $('select[name="hour"]').val() + $('select[name="minute"]').val());
+        console.log(deadlineChecker);
+
+        if (setChoices.length >= 2 && deadlineChecker) {
             $.ajax({
                 'url': '{% url 'cms:form' %}',
                 'type': 'POST',
@@ -171,12 +178,19 @@ $(function() {
                    $(this).val('');
                 });
                 $('div#form-choice-area').popover('dispose');
+                $('select[name="minute"]').popover('dispose');
 
                 const created = response.created;
                 const problem = response.problem;
                 console.log(created);
                 console.log(problem);
             })
+        } else if (setChoices.length >= 2) {
+            $('select[name="minute"]').popover({
+                content: '期間を指定してください',
+                placement: 'right',
+            });
+            $('select[name="minute"]').popover('show');
         } else {
             $('div#form-choice-area').popover({
                 content: '質問は２つ以上必要です',
@@ -374,6 +388,7 @@ $(function() {
             id: 'id_' + partA + '-' + currentChoicesCount + '-' + partB,
             class: 'form-control',
             placeholder: `回答${currentChoicesCount+1}`,
+            autocomplete: 'off'
         });
         extraChoice.css({
             'margin-bottom': '16px'
@@ -387,22 +402,33 @@ $(function() {
         totalForms.attr('value', currentChoicesCount);
     });
 
-    $('#form-open').on('click',function(e){
-        e.preventDefault();
-        $('.form__modal').fadeIn();
+    function modalOpen(modal) {
+        $(modal).fadeIn();
         pos = $(window).scrollTop();
         $('.container-fluid').css({
             'position': 'fixed',
-            'top': -1*pos
+            'top': -1 * pos
         })
-    });
-    $('.modal__bg').on('click',function(e){
-        e.preventDefault();
-        $('.form__modal').fadeOut();
+    }
+
+    function modalClose(modal) {
+        $(modal).fadeOut();
         $('.container-fluid').attr('style', '');
         $('html, body').prop({scrollTop: pos});
-        $('div#form-choice-area').popover('dispose');
+    }
+
+    $('#form-open').on('click',function(e){
+        e.preventDefault();
+        modalOpen('.form__modal');
     });
+
+    $('.modal__bg').on('click',function(e){
+        e.preventDefault();
+        modalClose('.__modal');
+        $('div#form-choice-area').popover('dispose');
+        $('select[name="minute"]').popover('dispose');
+    });
+
 });
 </script>
 {% endblock %}

@@ -1,6 +1,11 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+import datetime
+
+
+def tomorrow():
+    return timezone.now() + timezone.timedelta(days=1)
 
 
 class Question(models.Model):
@@ -14,6 +19,7 @@ class Question(models.Model):
     like_num = models.IntegerField(verbose_name='いいね！', default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='question_create_user', null=True)
     expired = models.BooleanField(verbose_name='締め切り', default=False)
+    deadline = models.DateTimeField(verbose_name='締め切り', default=tomorrow, null=True)
 
     def __str__(self):
         return self.text
