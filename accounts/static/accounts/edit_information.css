@@ -1,0 +1,117 @@
+.sheet {
+    background: #fff;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    padding: 100px 40px;
+}
+
+@media (min-width: 576px) {
+    .sheet {
+        width: 50%;
+        min-width: 576px;
+        height: auto;
+        padding: 40px;
+    }
+}
+
+h2 {
+    text-align: center;
+}
+
+label {
+    margin-top: 0.5em;
+}
+
+.mini {
+    display: inline-block;
+    padding-right: 1em;
+}
+
+select.form-control  {
+    width: 6em;
+}
+
+input#id_age {
+    width: 6em;
+}
+
+button.form__submit {
+    padding: 0.5em 1em;
+    text-decoration: none;
+    border: solid 0.1em hsla(180,60%,50%,1);
+    color: hsla(180,60%,50%,1);
+    background: hsla(180,0%,100%,1);
+    transition: .1s;
+    font-weight: lighter;
+    display: block;
+    margin: 0.7em 0 0 auto;
+}
+
+button.form__submit:hover {
+    color: hsla(0, 0%, 100%, 1);
+    background-color: hsla(180, 60%, 50%, 1);
+    border-color: hsla(180, 60%, 50%, 1);
+}
+
+.__checkbox {
+    font-size: 0.8em;
+    /*padding-left: 1em;*/
+    float: right;
+    margin-top: 12px;
+}
+
+.__checkbox input {
+    display: none;
+}
+
+.description{
+  padding-left: 20px;
+  position:relative;
+}
+
+/*チェックボックス*/
+.description::before{
+  content: "";
+  display: block;
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  width: 13px;
+  height: 13px;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+.description:hover{
+  color: hsl(180,60%,50%);
+}
+
+/*チェックサイン*/
+.__checkbox input:checked + .description::after{
+  content: "";
+  display: block;
+  position: absolute;
+  top: -3px;
+  left: 9px;
+  width: 7px;
+  height: 13px;
+  transform: rotate(40deg);
+  border-bottom: 3px solid hsl(180,60%,50%);
+  border-right: 3px solid hsl(180,60%,50%);
+}
+
+.checkbox__only {
+    vertical-align: top;
+}
+
+.checkbox__only label {
+    display: block;
+}
+
+div.area {
+    vertical-align: top;
+}

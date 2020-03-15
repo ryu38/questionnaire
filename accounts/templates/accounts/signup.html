@@ -2,29 +2,27 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'accounts/signup2.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/signup.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="__modal">
-    <div class="modal__ct shadow-sm">
-        <form method="post">
-            <h1>SIGN UP</h1>
-            <hr>
-            {% if form.errors %}
-                <p class="error__massage">パスワードが認められませんでした。</p>
-            {% endif %}
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div id="password__rule">
-                <P>パスワードは8文字以上必要です。</P>
-                <P>数字のみのパスワードは使用できません。</P>
-                <p>他の個人情報と似ているパスワードは使用できません。</p>
-            </div>
-            <hr>
-            <button type="submit" class="form__submit">SIGN UP</button>
-        </form>
-    </div>
+<div class="modal__ct shadow-sm">
+    <form method="post">
+        <h1>SIGN UP</h1>
+        <hr>
+        {% if form.errors %}
+            <p class="error__massage">パスワードが認められませんでした。</p>
+        {% endif %}
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div id="password__rule">
+            <P>パスワードは8文字以上必要です。</P>
+            <P>数字のみのパスワードは使用できません。</P>
+            <p>他の個人情報と似ているパスワードは使用できません。</p>
+        </div>
+        <hr>
+        <button type="submit" class="form__submit">SIGN UP</button>
+    </form>
 </div>
 {% endblock %}
 

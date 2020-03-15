@@ -20,6 +20,7 @@ class Question(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='question_create_user', null=True)
     expired = models.BooleanField(verbose_name='締め切り', default=False)
     deadline = models.DateTimeField(verbose_name='締め切り', default=tomorrow, null=True)
+    hide_name = models.BooleanField(verbose_name='匿名希望', default=False)
 
     def __str__(self):
         return self.text
@@ -31,7 +32,7 @@ class Choice(models.Model):
         verbose_name_plural = '選択リスト'
 
     question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
-    choice = models.CharField(verbose_name='選択', max_length=50, blank=False)
+    choice = models.CharField(verbose_name='選択', max_length=36, blank=False)
     vote_num = models.IntegerField(verbose_name='投票数', default=0)
 
     def __str__(self):

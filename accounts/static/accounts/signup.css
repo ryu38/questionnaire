@@ -2,39 +2,50 @@ div#header__nav {
     display: none;
 }
 
-.__modal {
-    height: 100vh;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    z-index: 2;
+.helptext {
+    display: none;
+}
+
+ul {
+    display: none;
+}
+
+label {
+    display: none;
 }
 
 .modal__ct {
     background: #fff;
     left: 50%;
-    padding: 40px;
+    padding: 80px 40px;
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 60%;
-    z-index: 1;
+    width: 100%;
+    height: 100%;
 }
 
-img {
-    width: 40%;
-}
-
-div#logo {
+h1 {
     text-align: center;
+}
+
+@media (min-width: 576px) {
+    .modal__ct {
+        width: 60%;
+        min-width: 576px;
+        height: auto;
+        padding: 40px;
+    }
 }
 
 p.error__massage {
     color: hsla(350,50%,50%,1);
 }
 
-input#id_username {
-    margin-bottom: 1em;
+div#password__rule p{
+    color: hsla(0,0%,50%,1);
+    font-size: 0.8em;
+    margin: 0.5em;
 }
 
 button.form__submit {

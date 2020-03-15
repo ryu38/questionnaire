@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load filter %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/edit_information.css' %}">
+{% endblock %}
+
+{% block title %}ユーザー情報{% endblock title %}
+
+{% block content %}
+    <div class="sheet shadow-sm">
+        <form method="POST" action="">
+            {% csrf_token %}
+            <h2>EDIT PROFILE</h2>
+            <hr>
+            <div id="nickname" class="area">
+                <label>{{ form.nickname.label }}</label>
+                <label class="__checkbox"><input type="checkbox" value="username"><span class="description">ユーザー名と同じにする</span></label>
+                {{ form.nickname }}
+            </div>
+            <div id="age" class="area mini">
+                <label>年齢</label>
+{#                <label class="__checkbox"><input type="checkbox" name="age_secret" value="secret"><span class="description">非公開</span></label>#}
+                {{ form.age }}
+            </div>
+            <div id="sex" class="area mini">
+                <label>性別</label>
+{#                <label class="__checkbox"><input type="checkbox" name="sex_secret" value="secret"><span class="description">非公開</span></label>#}
+                <select class="form-control" name="sex">
+                    <option val="---">---</option>
+                    <option val="男">男</option>
+                    <option val="女">女</option>
+                </select>
+            </div>
+            <div id="delete__image" class="area mini checkbox__only">
+                <label>画像</label>
+                <label class="__checkbox"><input type="checkbox" name="delete_image" value="delete_image"><span class="description">画像を削除</span></label>
+            </div>
+            <hr>
+            <button type="submit" class="form__submit">SAVE</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function() {
+    $('input[name="nickname"]').val('{{ information.nickname }}');
+    $('input[name="age"]').val('{{ information.age }}');
+    $('select[name="sex"]').val('{{ information.sex }}');
+
+    const secretStr = '{{ information.secret }}';
+    if (secretStr !== 'none') {
+         const secretList = secretStr.split('/');
+         for (let i = 0; i < secretList.length; i++) {
+             if (Number(secretList[i])) {
+                 const checkbox = $('input[value="secret"]').eq(i);
+                 checkbox.prop('checked', true);
+                 checkbox.closest('div.area').children('.form-control').css('color', 'hsl(0,0%,65%)')
+             }
+         }
+    }
+
+    $('input[type="checkbox"]').click(function() {
+        if ($(this).val() === 'username') {
+            if ($(this).prop('checked')) {
+                $(this).closest('div.area').children('.form-control').val('{{ information.user.username }}').attr('readonly', 'readonly')
+            } else {
+                $(this).closest('div.area').children('.form-control').removeAttr('readonly')
+            }
+        } else
+        if ($(this).val() === 'secret') {
+            if ($(this).prop('checked')) {
+                $(this).closest('div.area').children('.form-control').css('color', 'hsl(0,0%,65%)')
+            } else {
+                $(this).closest('div.area').children('.form-control').css('color', '')
+            }
+        }
+    })
+})
+</script>
+{% endblock %}

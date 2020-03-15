@@ -5,27 +5,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<link rel="stylesheet" href="{% static 'css/base2.css' %}">
 <link href="https://fonts.googleapis.com/css?family=Lato:400,700|Noto+Sans+JP:400,700" rel="stylesheet">
+<script src="https://kit.fontawesome.com/753413282a.js" crossorigin="anonymous"></script>
 {% block extra_css %}{% endblock %}
 <title>{% block title %}Quiction{% endblock %}</title>
 </head>
 <body>
 <div id="header__nav">
-<nav class="navbar navbar-expand-lg navbar-light shadow-sm p-2 pl-5 pr-5">
+<nav class="navbar navbar-expand shadow-sm">
   <div id="brand">
     <img src="{% static 'img/lightning.png' %}" id="logo">
       <a class="navbar-brand m-0" href="{% url 'cms:question_list' %}"><span class="skyblue">Quic</span>tion</a>
   </div>
-{#  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">#}
-{#   <span class="navbar-toggler-icon"></span>#}
-{#  </button>#}
-  <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+  <form action="{% url 'cms:question_list' %}" method="get" class="search__form">
+    <input name="query" value="{{ request.GET.query }}" type="text" placeholder="検索">
+    <input type="submit" value="&#xf3eb">
+  </form>
+    <form action="{% url 'cms:question_list' %}" method="get" class="filter__form">
+        <input type="hidden" name="filter" value="voted">
+    </form>
+  <div id="navbarNav">
+    <span class="create__wrapper"></span>
+{#    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav2" aria-controls="navbarNav2" aria-expanded="false" aria-label="Toggle navigation">#}
+{#    <span class="navbar-toggler-icon"></span>#}
+{#    </button>#}
+    <div id="menu">
     <ul class="navbar-nav">
         {% if user.is_authenticated %}
-          <li class="nav-item"><a  id="form-open" class="nav-link" href="">追加 </a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'cms:your_question_list' %}">あなたの質問 </a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'accounts:account' %}">アカウント</a></li>
+{#          <li class="nav-item"><a  id="form-open" class="nav-link" href="">追加 </a></li>#}
+{#          <li class="nav-item"><a class="nav-link" href="{% url 'cms:your_question_list' %}">あなたの質問 </a></li>#}
+{#          <li class="nav-item"><a class="nav-link" href="{% url 'cms:question_list' %}">質問を見る</a></li>#}
+          <li class="nav-item"><a class="nav-link" href="{% url 'cms:question_list' %}">回答する</a></li>
+          <li class="nav-item"><a class="do__filter nav-link" href="#">結果を見る</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'accounts:account' %}">マイページ</a></li>
 {#          <li class="nav-item"><a class="nav-link" href="{% url 'cms:favorite_list' %}">お気に入り</a></li>#}
           <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">ログアウト</a></li>
         {% else %}
@@ -33,20 +46,97 @@
           <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">ログイン</a></li>
         {% endif %}
     </ul>
-    {% if user.is_authenticated %}
-        <div class="ml-3">{{ user_information.user.username }}</div>
-　  {% endif %}
+    </div>
+      <label for="menu__control" class="__show">
+        <input id="menu__control" type="checkbox" style="display: none">
+        <span id="menu__button"><i class="fas fa-bars"></i></span>
+      </label>
+{#    {% if user.is_authenticated %}#}
+{#        <div class="ml-3">{{ user_information.user.username }}</div>#}
+{#　  {% endif %}#}
   </div>
 </nav>
+<div id="menu__small" class="shadow">
+    <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'cms:question_list' %}">回答する</a></li>
+        <li><a class="do__filter" href="#">結果を見る</a></li>
+        <li><a href="{% url 'accounts:account' %}">マイページ</a></li>
+        <li><a href="{% url 'logout' %}">ログアウト</a></li>
+        {% else %}
+        <li ><a href="{% url 'accounts:signup' %}">新規登録</a></li>
+        <li ><a href="{% url 'login' %}">ログイン</a></li>
+        {% endif %}
+    </ul>
+</div>
 </div>
 
-    {% block content %}
-      {{ content }}
-    {% endblock %}
+{% block content %}
+  {{ content }}
+{% endblock %}
 
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script>
+$(function() {
+    function searchAnimate() {
+        $('form.search__form').css({
+            animation: 'search .2s ease forwards'
+        });
+        $('form.search__form input[type="submit"]').css({
+            animation: 'search__button .2s ease forwards'
+        });
+    };
+    function searchAnimateReverse() {
+        $('form.search__form').css({
+            animation: 'search .2s ease reverse forwards'
+        });
+        $('form.search__form input[type="submit"]').css({
+            animation: 'search__button .2s ease reverse forwards'
+        });
+    }
+
+    const searchForm = $('form.search__form');
+
+    searchForm.children('input[type="text"]').focus(function() {
+        searchAnimate();
+    });
+    searchForm.children('input[type="text"]').blur(function() {
+        searchAnimateReverse();
+    });
+    searchForm.submit(function() {
+        searchAnimate();
+    })
+
+    {#inputを指定#}
+    $('input#menu__control').click(function() {
+        if ($(this).prop('checked')) {
+            $('div#menu__small').css({
+                maxHeight: '5000px', //値は何でもいい
+                {#transition: 'max-height .15s ease-out'#}
+            })
+        } else {
+            $('div#menu__small').css({
+                maxHeight: '0',
+                {#transition: 'max-height .25s ease-in'#}
+             })
+        }
+    })
+    $('.container-fluid').click(function() {
+        $('div#menu__small').css({
+            maxHeight: '0'
+        });
+        $('input#menu__control').prop('checked', ''); //false NG
+    })
+
+    $('.do__filter').click(function(e) {
+        e.preventDefault();
+        $('form.filter__form').submit();
+    })
+
+})
+</script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

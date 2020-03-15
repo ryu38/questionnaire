@@ -1,0 +1,289 @@
+body {
+    background-color: hsla(200,50%,98%,1);
+    font-family: 'Lato', 'Noto Sans JP', 'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN', 'メイリオ', Meiryo, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+}
+
+div#brand {
+    position: relative;
+    left: 3%;
+}
+
+div#brand a {
+    position: relative;
+    z-index: 1;
+    text-shadow: 1px 1px 0 white;
+    color: hsla(0,0%,0%,.9);
+}
+
+span.skyblue {
+    color: hsla(180,60%,50%,1);
+}
+
+img#logo {
+    position: absolute;
+    top: 35%;
+    left: 1%;
+    width: 18%;
+    transform: rotate(30deg);
+    z-index: 0;
+}
+
+div#header__nav {
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+    top: 0;
+}
+
+nav {
+    border-bottom: solid 2px hsla(190,70%,70%,1);
+    background-color: hsla(0,0%,100%,0.96);
+}
+
+div#menu__small {
+    background: hsla(180,25%,99%,.98);
+    margin: 0 0 0 auto;
+    width: 100%;
+    max-width: 15rem;
+    max-height: 0;
+    transition: max-height .25s ease-in;
+    overflow: hidden;
+}
+
+div#menu__small ul {
+    padding: .5rem;
+}
+
+div#menu__small ul li {
+    border-bottom: solid 1px hsl(0,0%,90%);
+    text-align: center;
+    padding: .2rem 0;
+}
+
+div#menu__small ul li a {
+    color: hsl(0,0%,40%);
+    text-decoration: none;
+    width: 100%;
+    display: block;
+    padding: .5rem 0;
+}
+
+div#menu__small ul li a:hover {
+    color: hsl(180,50%,60%);
+}
+
+/*@-webkit-keyframes menu__show {*/
+/*    from {*/
+/*        max-height: 1px;*/
+/*    }*/
+/*    to {*/
+/*        max-height: 300px;*/
+/*    }*/
+/*}*/
+
+@media (min-width: 992px) {
+    div#menu__small {
+        display: none;
+    }
+}
+
+.navbar {
+    justify-content: flex-start;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 150%;
+}
+
+div#navbarNav {
+    width: auto;
+    display: flex;
+    right: 0;
+    position: absolute;
+}
+
+div#menu {
+    display: none;
+    padding-right: 1.5rem;
+}
+
+label[for="menu__control"] {
+    display: block;
+    margin: 0;
+    padding-right: .8rem;
+}
+
+span#menu__button {
+    border: none;
+    font-size: 2em;
+    background: none;
+    color: hsl(0,0%,40%);
+    margin-left: .5rem;
+    transition: .2s;
+}
+
+span#menu__button:hover {
+    color: hsl(180,50%,60%);
+}
+
+@media (min-width: 992px) {
+    div#menu {
+        display: block;
+    }
+    span#menu__button {
+        display: none;
+    }
+}
+
+ul.navbar-nav {
+    font-weight: normal;
+    font-size: 0.85rem;
+}
+
+li.nav-item {
+    padding: 0 .1rem;
+}
+
+a.nav-link {
+    color: hsl(0,0%,40%);
+}
+
+a.nav-link:hover {
+    color: hsl(180,60%,50%);
+}
+
+span.create__wrapper {
+    position: relative;
+    display: none;
+}
+
+a.on__header {
+    /*flex対応*/
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: hsl(180,60%,50%);
+    text-decoration: none;
+    padding: 0.5rem 0.8rem;
+    margin-right: 0.5rem;
+    /*nav-link 高さ合わせる*/
+    display: block;
+    /*background: hsl(180,100%,98%);*/
+    border: solid 1px hsl(180,60%,50%);
+    transition: .1s;
+}
+
+a.on__header:hover {
+    color: hsl(0,0%,100%);
+    background: hsl(180,60%,50%);
+    /*border: solid 1px hsl(180,50%,60%);*/
+    /*box-shadow: 0 0 12px 2px hsla(0,0%,70%,0.5);*/
+}
+
+div.float__button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1;
+}
+
+div.float__button a {
+    background: hsl(180,50%,60%);
+    display: block;
+    font-size: 1.2em;
+    line-height: 1;
+    padding: 15px;
+    border-radius: 50%;
+    color: white;
+}
+
+form.search__form {
+    /*position: relative;*/
+    /*border: solid 1px hsl(0,0%,40%);*/
+    /*background: black;*/
+    /*box-sizing: content-box;*/
+    /*vertical-align: middle;*/
+    /*padding: auto;*/
+
+    box-sizing: border-box;
+    position: relative;
+    /*border: 1px solid hsl(0,0%,75%);*/
+    display: block;
+    padding: 0.1em 0.4em 0.1em 0.8em;
+    border-radius: 1px;
+    height: 2em;
+    width: 50%;
+    left: 6%;
+    overflow: hidden;
+    background: hsl(0,0%,95%);
+}
+
+@media (min-width: 992px) {
+    span.create__wrapper {
+        display: block;
+    }
+    div.float__button {
+        display: none;
+    }
+    form.search__form {
+        width: 30%;
+    }
+}
+
+@-webkit-keyframes search {
+    from {background-color: hsl(0,0%,95%)}
+    to {background-color: hsl(180,100%,98%)}
+}
+
+form.search__form > input[type="text"] {
+    /*border: 0;*/
+    /*box-sizing: content-box;*/
+    border: none;
+    height: 100%;
+    width: 75%;
+    background: hsla(0,0%,0%,0);
+}
+
+form.search__form > input[type="text"]:focus {
+    outline: none;
+}
+
+form.search__form > input[type="submit"] {
+    /*font-family: FontAwesome;*/
+    /*border: 0;*/
+    /*box-sizing: content-box;*/
+    /*width: 14px;*/
+    cursor: pointer;
+    font-family: FontAwesome;
+    font-size: 1.3rem;
+    border: none;
+    background: hsl(0,0%,80%);
+    color: #fff;
+    position: absolute;
+    width: 20%;
+    min-width: 36px;
+    height: 100%;
+    right:0px;
+    top: 0px;
+    outline : none;
+}
+
+@-webkit-keyframes search__button {
+    from {background-color: hsl(0,0%,80%)}
+    to {background-color: hsl(180,50%,60%)}
+}
+
+/*form.search__form > button {*/
+/*    height: 30px;*/
+/*    width: auto;*/
+/*}*/
+
+/*form.search__form > button > img {*/
+/*    margin: 0 auto;*/
+/*    display: inline-block;*/
+/*    height: 80%;*/
+/*    vertical-align: text-bottom;*/
+/*}*/

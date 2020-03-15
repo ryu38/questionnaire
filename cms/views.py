@@ -11,6 +11,8 @@ from django.contrib.auth import get_user_model
 from django.utils.timezone import localtime
 import datetime
 from django.utils import timezone
+from accounts.models import UserImage, UserInformation
+from django.db.models import Q
 from django.template.context_processors import csrf
 import pdb
 
@@ -40,43 +42,40 @@ class QuestionList(TemplateView):
             ctx['voted_questions'] = []
             ctx['voted_choices'] = []
 
-        voted_date = list(questions.values_list('date_created', flat=True))
         deadline_date = list(questions.values_list('deadline', flat=True))
-        localdates = []
-        strfdates = []
-        localdeadlines = []
-        deadlines = []
-        for date, deadline in zip(voted_date, deadline_date):
-            local_date = localtime(date)
-            strfdates.append(date.strftime('%Y/%m/%d %H:%M:%S'))
-            localdates.append(local_date.strftime('%Y/%m/%d %H:%M:%S'))
-
-            local_deadline = localtime(deadline)
-            deadlines.append(deadline.strftime('%Y/%m/%d %H:%M:%S'))
-            localdeadlines.append(local_deadline.strftime('%Y/%m/%d %H:%M:%S'))
-        dates_lists = [strfdates, deadlines, localdates, localdeadlines]
-
         for i, question in enumerate(questions):
             if deadline_date[i] <= timezone.now():
                 question.expired = True
                 question.save()
-        # 期限切れソート
-                for dates_list in dates_lists:
-                    dates_list[i] = '!'
 
-        sorted_dates_lists = [[], [], [], []]
+        keyword = self.request.GET.get('query')
+        filtering = self.request.GET.get('filter')
 
-        for i, dates_list in enumerate(dates_lists):
-            for date in dates_list:
-                if '!' not in date:
-                    sorted_dates_lists[i].append(date)
-        # ここまで
-        ctx['voted_dates'] = sorted_dates_lists[0]
-        ctx['deadlines'] = sorted_dates_lists[1]
-        ctx['local_dates'] = sorted_dates_lists[2]
-        ctx['local_deadlines'] = sorted_dates_lists[3]
+        if filtering:
+            if filtering == 'voted':
+                filter_question = ctx['voted_questions']
+            display_questions = Question.objects.filter(pk__in=filter_question).order_by('-date_created').prefetch_related('choices')[:6]
 
-        display_questions = Question.objects.filter(expired=False).prefetch_related('choices')[:6]
+        elif keyword:
+            choice_contain = Choice.objects.filter(choice__icontains=keyword).values_list('question_id', flat=True)
+            display_questions = Question.objects.filter(
+                Q(text__icontains=keyword) | Q(pk__in=choice_contain)).order_by('-date_created').prefetch_related('choices')[:6]
+
+        else:
+            display_questions = Question.objects.filter(expired=False).exclude(
+                pk__in=ctx['voted_questions']).order_by('deadline').prefetch_related('choices')[:6]
+
+        deadline_date = list(display_questions.values_list('deadline', flat=True))
+        deadlines = []
+        localdeadlines = []
+        for deadline in deadline_date:
+            local_deadline = localtime(deadline)
+            deadlines.append(deadline.strftime('%Y/%m/%d %H:%M:%S'))
+            localdeadlines.append(local_deadline.strftime('%Y/%m/%d %H:%M:%S'))
+        dates_lists = [deadlines, localdeadlines]
+
+        ctx['deadlines'] = dates_lists[0]
+        ctx['local_deadlines'] = dates_lists[1]
 
         total = []
         for question in display_questions:
@@ -111,7 +110,7 @@ def create(request):
     if form.is_valid():
         question = form.save(commit=False)
         choice_formset = ChoiceFormset(request.POST, instance=question)
-        print(request.POST)
+        print(question)
 
         if choice_formset.is_valid():
             question.user = request.user
@@ -119,6 +118,8 @@ def create(request):
             hour = int(request.POST.get('hour'))
             minute = int(request.POST.get('minute'))
             question.deadline = timezone.now() + timezone.timedelta(days=day, hours=hour, minutes=minute)
+            if request.POST.get('hide_name') is not None:
+                question.hide_name = True
             question.save()
             choice_formset.save()
             print('成功！')
@@ -142,28 +143,86 @@ def create(request):
     return JsonResponse(ctx)
 
 
+def delete_question(request):
+    question_id = request.POST.get('question_id')
+    question = get_object_or_404(Question, pk=question_id)
+    question.delete()
+    ctx = {'deleted_question': question_id}
+    return JsonResponse(ctx)
+
+
 def add_question(request):
     c = int(request.GET.get('loaded_count'))
     str_displayed_questions_pk = request.GET.get('displayed')
-    displayed_questions_pk = str_displayed_questions_pk.split('/')
-    print(displayed_questions_pk)
+    keyword = request.GET.get('keyword')
+    filtering = request.GET.get('filter')
+    if str_displayed_questions_pk:
+        displayed_questions_pk = str_displayed_questions_pk.split('/')
+        print(str_displayed_questions_pk)
+    else:
+        displayed_questions_pk = [0]
 
-    additional_questions = Question.objects.filter(expired=False).exclude(pk__in=displayed_questions_pk)[:6]
+    if request.user.is_authenticated:
+        votes = Vote.objects.filter(user=request.user)
+        voted_questions = list(votes.values_list('question_id', flat=True))
+    else:
+        voted_questions = []
+
+    if filtering:
+        if filtering == 'voted':
+            filter_question = voted_questions
+        additional_questions = Question.objects.filter(pk__in=filter_question).exclude(pk__in=displayed_questions_pk).order_by('-date_created').prefetch_related(
+            'choices')[:6]
+
+    elif keyword:
+        choice_contain = Choice.objects.filter(choice__icontains=keyword).values_list('question_id', flat=True)
+        additional_questions = Question.objects.filter(
+            Q(text__icontains=keyword) | Q(pk__in=choice_contain)).exclude(pk__in=displayed_questions_pk).order_by('-date_created').prefetch_related(
+            'choices')[:6]
+
+    else:
+        displayed_questions_pk.extend(voted_questions)
+        additional_questions = Question.objects.filter(expired=False).exclude(
+            pk__in=displayed_questions_pk).order_by('deadline').prefetch_related('choices')[:6]
+
     if additional_questions.count():
         pk_list = []
         text_list = []
+        deadline_list = []
+        local_deadline_list = []
+        total_list = []
+        user_list = []
+        image_list = []
+
         choices_list = []
         choice_pks_list = []
         rates_list = []
         for question in additional_questions:
             pk_list.append(question.pk)
             text_list.append(question.text)
+            deadline = question.deadline
+            local_deadline = localtime(deadline)
+            deadline_list.append(deadline.strftime('%Y/%m/%d %H:%M:%S'))
+            local_deadline_list.append(local_deadline.strftime('%Y/%m/%d %H:%M:%S'))
+            if not question.hide_name:
+                user_information = UserInformation.objects.get(user=question.user)
+                user_list.append(user_information.nickname)
+                try:
+                    image = UserImage.objects.get(user=question.user)
+                except UserImage.DoesNotExist:
+                    image_list.append(0)
+                else:
+                    image_list.append(image.image.url)
+            else:
+                user_list.append('hidden')
+                image_list.append(0)
 
             choices = Choice.objects.filter(question=question)
             choices_list.append(list(choices.values_list('choice', flat=True)))
             choice_pks_list.append(list(choices.values_list('pk', flat=True)))
             votes_num_list = list(choices.values_list('vote_num', flat=True))
             total = sum(votes_num_list)
+            total_list.append(total)
             rate_list = []
             if total:
                 for i in votes_num_list:
@@ -192,6 +251,11 @@ def add_question(request):
         ctx = {
             'question_pk_list': pk_list,
             'text_list': text_list,
+            'deadline_list': deadline_list,
+            'local_deadline_list': local_deadline_list,
+            'user_list': user_list,
+            'image_list': image_list,
+            'total_list': total_list,
             'choices_list': choices_list,
             'choice_pks_list': choice_pks_list,
             'rates_list': rates_list,
@@ -204,6 +268,43 @@ def add_question(request):
         ctx = {
             'not_zero': 0
         }
+
+    return JsonResponse(ctx)
+
+
+def vote(request):
+    choice_pk = request.GET.get('choice_pk')
+    question_pk = request.GET.get('question_pk')
+
+    choice = get_object_or_404(Choice, pk=choice_pk)
+    choice.vote_num += 1
+    choice.save()
+
+    if request.user.is_authenticated:
+        vote = Vote()
+        vote.user = request.user
+        vote.choice = choice
+        vote.question = choice.question
+        vote.save()
+
+    choices = Choice.objects.filter(question__pk=question_pk)
+    votes_num_list = list(choices.values_list('vote_num', flat=True))
+    total = sum(votes_num_list)
+
+    rates_list = []
+    for i in votes_num_list:
+        result = round(i*100 / total)
+        rates_list.append(result)
+
+    ctx = {
+        'rates_list': rates_list,
+        'total_num': total
+    }
+
+    if not request.user.is_authenticated:
+        choice = get_object_or_404(Choice, pk=choice_pk)
+        choice.vote_num -= 1
+        choice.save()
 
     return JsonResponse(ctx)
 
@@ -287,37 +388,6 @@ def like(request, pk):
     return redirect(reverse_lazy('cms:question_list'))
 
 
-@login_required
-def vote(request):
-    choice_pk = request.GET.get('choice_pk')
-    question_pk = request.GET.get('question_pk')
-
-    choice = get_object_or_404(Choice, pk=choice_pk)
-    choice.vote_num += 1
-    choice.save()
-
-    vote = Vote()
-    vote.user = request.user
-    vote.choice = choice
-    vote.question = choice.question
-    vote.save()
-
-    choices = Choice.objects.filter(question__pk=question_pk)
-    votes_num_list = list(choices.values_list('vote_num', flat=True))
-    total = sum(votes_num_list)
-
-    rates_list = []
-    for i in votes_num_list:
-        result = round(i*100 / total)
-        rates_list.append(result)
-
-    ctx = {
-        'rates_list': rates_list,
-    }
-
-    return JsonResponse(ctx)
-
-
 def create_question(request):
     print(request.POST)
     form = QuestionForm(request.POST or None,
@@ -361,7 +431,3 @@ class LikedList(LoginRequiredMixin, ListView):
             ctx['voted_questions'] = []
 
         return ctx
-
-
-# def likedlist(request):
-#     return HttpResponse('OK')

@@ -1,142 +1,5 @@
-{% extends "base.html" %}
-{% load filter %}
-{% load static %}
-
-{% block title %}質問一覧{% endblock title %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'cms/questions.css' %}">
-{% endblock %}
-
-{% block content %}
-<div class="float__button">
-    <a class="form-open shadow" href=""><i class="fas fa-paper-plane"></i></a>
-</div>
-
-<div class="container-fluid">
-<div class="base row mt-1">
-  {% for question, total in questions %}
-      <div class="sheet col-xl-4 col-md-6">
-          <div class="sheet-content shadow-sm rounded-lg">
-            <div class="top-area">
-              <span class="image__wrapper image__mini">
-              {% if question.user.image.all and not question.hide_name %}
-              {% for image in question.user.image.all %}
-{#              ディレクトリを直接入力してもOK#}
-                <img class="user__icon" src="{{ image.image.url }}" />
-              {% endfor %}
-              {% else %}
-                <img class="user__icon" src="{% static 'img/person.png' %}" />
-              {% endif %}
-              </span>
-              {% if not question.hide_name %}
-              {% for information in question.user.information.all %}
-                <span class="nickname">{{ information.nickname }}</span>
-              {% endfor %}
-              {% else %}
-                <span class="nickname" style="color: hsl(0,0%,50%)">誰かさん</span>
-              {% endif %}
-              <span class="timer-wrapper">残り　<span class="timer"></span></span>
-            </div>
-            <div id="{{ question.pk }}" class="question-area mt-2 mb-2">
-              <p class="question-text">{{ question.text }}</p>
-                <div class="detail">
-                    <span class="dot">...</span>
-                    <span class="status">全て表示</span>
-                </div>
-            </div>
-            <hr class="hr1">
-            <div id="{{ question.pk }}" class="choice-area">
-                {% if question.pk|votes_check:voted_questions %}
-{#                  <div class="btn-group-vertical" role="group">#}
-                    {% for answer in question.choices.all %}
-                        <a href="#" id="{{ answer.pk }}" class="choice choice-{{ question.pk }}">{{ answer.choice }}</a>
-                    {% endfor %}
-{#                  </div>#}
-                {% else %}
-                    {% for answer in question.choices.all %}
-                        {% if answer.pk|your_vote:voted_choices %}
-                            <div class="result-area" style="
-                                    background:linear-gradient(90deg,
-                                    hsla(180,60%,50%,1) 0%,hsla(180,60%,50%,1) {{ answer.vote_num|votes_rate:total }}%,
-                                    hsla(180,100%,98%,1) {{ answer.vote_num|votes_rate:total }}%,hsla(180,100%,98%,1) 100%);
-                            ">
-                        {% else %}
-                            <div class="result-area" style="
-                                    background:linear-gradient(90deg,
-                                    hsla(200,30%,80%,1) 0%,hsla(200,30%,80%,1) {{ answer.vote_num|votes_rate:total }}%,
-                                    hsla(200,20%,98%,1) {{ answer.vote_num|votes_rate:total }}%,hsla(200,20%,98%,1) 100%);
-                            ">
-                        {% endif %}
-                              <span class="choice__text">{{ answer.choice }}</span>
-                              <span class="rate">{{ answer.vote_num|votes_rate:total }}%</span>
-                            </div>
-                    {% endfor %}
-                {% endif %}
-{#                <a href="{% url 'cms:like' question.pk %}" class="btn btn-secondary btn-sm">いいね！</a>#}
-            </div>
-            <div id="{{ question.pk }}" class="bottom__area">
-              <span class="total">投票数 {{ total }}</span>
-            </div>
-          </div>
-      </div>
-  {% endfor %}
-</div>
-<div id="load__question">
-  <a href="#" class="a__type1 load__active"><i class="fas fa-caret-down"></i></a>
-</div>
-</div>
-
-<div class="__modal form__modal">
-    <div class="modal__bg"></div>
-    <div class="modal__ct">
-        <form id="create" method="post">
-            <div class="form__close">
-                <a class="a__type1" href="#"><i class="fas fa-times"></i></a>
-            </div>
-
-            <div id="deadline">
-                <h5>Deadline</h5>
-                <select class="form-control" name="day"><option value="" disabled selected>日</option></select>
-                <select class="form-control" name="hour"><option value="" disabled selected>時</option></select>
-                <select class="form-control" name="minute"><option value="" disabled selected>分</option></select>
-            </div>
-            <hr>
-
-            <h5>Question</h5>
-            {{ form.as_p }}
-
-            <h5>Choices</h5>
-            {{ choice_formset.management_form }}
-                <div id="form-choice-area">
-                {% for choice_form in choice_formset %}
-                    {{ choice_form.as_p }}
-                {% endfor %}
-                </div>
-
-            {% csrf_token %}
-            <div id="add__area">
-                <a class="a__type1" href="#" id="add">+</a>
-            </div>
-            <hr>
-            <label class="__checkbox __show"><input type="checkbox" name="hide_name" value="hiding"><span class="description">匿名にする</span></label>
-            <button type="submit" class="form__submit">POST</button>
-        </form>
-    </div>
-</div>
-</div>
-{% endblock content %}
-
-{% block extra_js %}
-<script>
 $(function() {
-    {% if user.is_authenticated %}
-        $('.create__wrapper').prepend('<a class="form-open on__header" href="">質問する </a>');
-    {% else %}
-        $('.create__wrapper').prepend('<a class="on__header" href="{% url 'accounts:signup' %}">質問する </a>');
-        $('div.float__button a').attr('href', '{% url 'accounts:signup' %}').removeClass('form-open');
-        $('div#load__question a').attr('href', '{% url 'accounts:signup' %}').removeClass('load__active');
-    {% endif %}
+    $('ul.navbar-nav').prepend('<li class="nav-item"><a  id="form-open" class="nav-link" href="">追加 </a></li>');
 
     function adjustImage() {
         const imageWrapper = $('.image__wrapper');
@@ -161,7 +24,6 @@ $(function() {
     adjustImage();
 
     $('label').hide();
-    $('label.__show').show();
     $('textarea').attr('placeholder', '質問を入力してください');
     for (let i = 0; i < 2; i++) {
         $(`input#id_choices-${i}-choice`).attr({
@@ -185,7 +47,7 @@ $(function() {
         if ($(this).attr('class') === 'status') {
             $(`div#${questionPK}.choice-area`).hide();
             $(`div.question-area#${questionPK}`).css({
-                height: '392px',
+                height: '380px',
             });
             $(`div.question-area#${questionPK} p`).css({
                 height: 'calc(100% - 2em)',
@@ -244,15 +106,19 @@ $(function() {
 
     $('form#create').submit(function(e) {
         e.preventDefault();
+        // {#const choicesHtml = $('input[name^="choices"][type="text"]');#}
+        // {#var choicesList = [];#}
+        // {#choicesHtml.each(function() {#}
+        // {#const val = $(this).val();#}
+        // {#    choicesList.push(val);#}
+        // {# });#}
+        // {#const choices = choicesList.join('/');#}
+        // {#console.log(choices);#}
 
         const setChoicesHtml = $('input[name^="choices"][type="text"]');
         let setChoices = [];
         setChoicesHtml.each(function() {
-            let text = $(this).val();
-            if (!text.match(/\S/g)) {
-                text = "";
-            }
-            setChoices.push(text);
+            setChoices.push($(this).val())
         });
         setChoices = setChoices.filter(Boolean);
 
@@ -319,7 +185,7 @@ $(function() {
     function countdownTimer(deadline, local, n) {
         var nowTime = new Date();
         if (nowTime > local) { //なぜかifではローカルタイムが考慮されない
-            $('.timer').eq(n).text('期限切れ');
+            $('.timer').eq(n).text('expired');
         } else {
             var calc =  new Date(deadline - nowTime);//ここでは時間が合わせられる
             var date = calc.getDate() - 1 ? calc.getDate() - 1 + '日' : ''; //? = if
@@ -339,7 +205,7 @@ $(function() {
     setInterval(repeater, 60000);
 
     var loadedCount = 0;
-    $('div#load__question a.load__active').click(function(e) {
+    $('#plus button').click(function(e) {
         e.preventDefault();
         loadedCount += 1;
 
@@ -356,8 +222,6 @@ $(function() {
             'data': {
                 'loaded_count': loadedCount,
                 'displayed': strDisplayedQuestionsPk,
-                'keyword': '{{ request.GET.query }}',
-                'filter': '{{ request.GET.filter }}'
             },
             'dataType': 'json'
         }).done(function(response) {
@@ -365,8 +229,6 @@ $(function() {
             if (zeroCheck) {
                 const questionPkList = response.question_pk_list;
                 const textList = response.text_list;
-                const addDeadlineList = response.deadline_list;
-                const addLocalDeadlineList = response.local_deadline_list;
                 const userList = response.user_list;
                 const imageList = response.image_list;
                 const totalList = response.total_list;
@@ -382,9 +244,9 @@ $(function() {
                           <div class="sheet-content shadow-sm rounded-lg">
                             <div class="top-area">
                               <span class="image__wrapper image__mini">
-                                <img class="user__icon img__${imageList[i]}" src="${imageList[i]}" />
+                                <img class="user__icon" src="${imageList[i]}" />
                               </span>
-                              <span class="nickname name__${userList[i]}">${userList[i]}</span>
+                              <span class="username">${userList[i]}</span>
                                 <span class="timer-wrapper mt-1">残り　<span class="timer"></span></span>
                             </div>
                             <div id="${questionPkList[i]}" class="question-area mt-2 mb-2">
@@ -403,10 +265,6 @@ $(function() {
                           </div>
                         </div>
                     `);
-                    var endTime = new Date(`${addDeadlineList[i]}`);
-                    deadlineList.push(endTime);
-                    var localEndTime = new Date(`${addLocalDeadlineList[i]}`);
-                    localDeadlineList.push(localEndTime);
                     if (votedCheck[i]) {
                         for (let j = 0; j < choicePksList[i].length; j++) {
                             $(`div#${questionPkList[i]}.choice-area`).append(`
@@ -438,12 +296,10 @@ $(function() {
                         }
                     }
                 }
-                $('img.img__0').attr('src', '{% static 'img/person.png' %}');
-                $('span.name__hidden').text('誰かさん').css({'color': 'hsl(0,0%,50%)'});
                 adjustImage();
                 repeater();
             }else {
-                $('div#load__question').empty();
+                $('#plus').empty();
             }
         })
     });
@@ -548,12 +404,12 @@ $(function() {
         $('html, body').prop({scrollTop: pos});
     }
 
-    $('.form-open').on('click',function(e){
+    $('#form-open').on('click',function(e){
         e.preventDefault();
         modalOpen('.form__modal');
     });
 
-    $('.modal__bg, .form__close').on('click',function(e){
+    $('.modal__bg').on('click',function(e){
         e.preventDefault();
         modalClose('.__modal');
         $('div#form-choice-area').popover('dispose');
@@ -561,5 +417,3 @@ $(function() {
     });
 
 });
-</script>
-{% endblock %}

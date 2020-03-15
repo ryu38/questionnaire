@@ -3,31 +3,678 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'accounts/account.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/account2.css' %}">
 {% endblock %}
 
 {% block title %}ユーザー情報{% endblock title %}
 
 {% block content %}
+<div class="float__button">
+    <a class="form-open shadow" href=""><i class="fas fa-paper-plane"></i></a>
+</div>
+
 <div class="container-fluid">
     <div class="row">
         <div class="sheet__base col-lg-5">
-            <div class="sheet shadow-sm">
+            <div class="sheet2 shadow-sm position-relative">
+                <div id="image__wrapper">
+                    {% if image.image %}
+                        <img class="user__icon" src="{{ image.image.url }}" />
+                    {% else %}
+                        <img class="user__icon" src="{% static 'img/person.png' %}" />
+                    {% endif %}
+                </div>
+                <form id="file" method="POST" enctype="multipart/form-data"> {#enctype required#}
+                    {% csrf_token %}
+                        {{ image_form.image }}
+                    <button type="submit">UPLOAD</button>
+                </form>
+                <label class="__show" for="id_image">
+                    <p>↑</p>
+                </label>
             </div>
         </div>
         <div class="sheet__base col-lg-7">
-            <div class="sheet shadow-sm">
+            <div class="sheet2 shadow-sm">
                 <h1>PROFILE</h1>
                 <hr>
-                <div><span class="__label">Name</span><span class="__information">{{ information.user.username }}</span></div>
+                <div><span class="__label">Name</span><span class="__information">{{ information.nickname }}</span></div>
                 <hr>
-                <div><span class="__label">Age</span><span class="__information">{{ information.age }}</span></div>
+                <div class="secret__check"><span class="__label">Age</span><span class="__information">{{ information.age }}</span></div>
                 <hr>
-                <div><span class="__label">Gender</span><span class="__information">{{ information.sex }}</span></div>
+                <div class="secret__check"><span class="__label">Gender</span><span class="__information">{{ information.sex }}</span></div>
                 <hr>
-                <div id="to__edit"><a href="#">プロフィールを編集</a></div>
+                <div id="to__edit"><a href="{% url 'accounts:edit_information' %}">プロフィールを編集</a></div>
             </div>
         </div>
     </div>
+
+    <div class="__title">YOUR QUESTIONS</div>
+    <div class="base row mt-1">
+    {% for question, total in questions %}
+      <div class="sheet col-xl-4 col-md-6">
+          <div class="sheet-content shadow-sm rounded-lg">
+            <div class="top-area">
+              <span class="image__wrapper image__mini">
+              {% if question.user.image.all and not question.hide_name %}
+              {% for image in question.user.image.all %}
+{#              ディレクトリを直接入力してもOK#}
+                <img class="user__icon" src="{{ image.image.url }}" />
+              {% endfor %}
+              {% else %}
+                <img class="user__icon" src="{% static 'img/person.png' %}" />
+              {% endif %}
+              </span>
+              {% if not question.hide_name %}
+              {% for information in question.user.information.all %}
+                <span class="nickname">{{ information.nickname }}</span>
+              {% endfor %}
+              {% else %}
+                <span class="nickname" style="color: hsl(0,0%,50%)">誰かさん</span>
+              {% endif %}
+              <span class="timer-wrapper">残り　<span class="timer"></span></span>
+            </div>
+            <div id="{{ question.pk }}" class="question-area mt-2 mb-2">
+              <p class="question-text">{{ question.text }}</p>
+                <div class="detail">
+                    <span class="dot">...</span>
+                    <span class="status">全て表示</span>
+                </div>
+            </div>
+            <hr class="hr1">
+            <div id="{{ question.pk }}" class="choice-area">
+                {% if question.pk|votes_check:voted_questions %}
+{#                  <div class="btn-group-vertical" role="group">#}
+                    {% for answer in question.choices.all %}
+                        <a href="#" id="{{ answer.pk }}" class="choice choice-{{ question.pk }}">{{ answer.choice }}</a>
+                    {% endfor %}
+{#                  </div>#}
+                {% else %}
+                    {% for answer in question.choices.all %}
+                        {% if answer.pk|your_vote:voted_choices %}
+                            <div class="result-area" style="
+                                    background:linear-gradient(90deg,
+                                    hsla(180,60%,50%,1) 0%,hsla(180,60%,50%,1) {{ answer.vote_num|votes_rate:total }}%,
+                                    hsla(180,100%,98%,1) {{ answer.vote_num|votes_rate:total }}%,hsla(180,100%,98%,1) 100%);
+                            ">
+                        {% else %}
+                            <div class="result-area" style="
+                                    background:linear-gradient(90deg,
+                                    hsla(200,30%,80%,1) 0%,hsla(200,30%,80%,1) {{ answer.vote_num|votes_rate:total }}%,
+                                    hsla(200,20%,98%,1) {{ answer.vote_num|votes_rate:total }}%,hsla(200,20%,98%,1) 100%);
+                            ">
+                        {% endif %}
+                              <span class="choice__text">{{ answer.choice }}</span>
+                              <span class="rate">{{ answer.vote_num|votes_rate:total }}%</span>
+                            </div>
+                    {% endfor %}
+                {% endif %}
+{#                <a href="{% url 'cms:like' question.pk %}" class="btn btn-secondary btn-sm">いいね！</a>#}
+            </div>
+            <div id="{{ question.pk }}" class="bottom__area">
+              <span class="total">投票数 {{ total }}</span>
+                <span class="question__delete">
+                    <form name="do__delete" method="post" class="do__delete">
+                    {% csrf_token %}
+                    <input type="hidden" name="question_id" value="{{ question.pk }}">
+                        <span class="delete__warning">
+                            <a href="#" class="delete__cancel a__type1"><i class="fas fa-times"></i></a>
+                            再度選択して削除されます
+                        </span>
+                        <a href="#" class="a__type1"><i class="fas fa-trash-alt"></i></a>
+                    </form>
+                </span>
+            </div>
+          </div>
+      </div>
+  {% endfor %}
 </div>
+<div id="load__question">
+  <a href="#" class="a__type1 load__active"><i class="fas fa-caret-down"></i></a>
+</div>
+</div>
+
+<div class="__modal form__modal">
+    <div class="modal__bg"></div>
+    <div class="modal__ct">
+        <form id="create" method="post">
+            <div class="form__close">
+                <a class="a__type1" href="#"><i class="fas fa-times"></i></a>
+            </div>
+
+            <div id="deadline">
+                <h5>Deadline</h5>
+                <select class="form-control" name="day"><option value="" disabled selected>日</option></select>
+                <select class="form-control" name="hour"><option value="" disabled selected>時</option></select>
+                <select class="form-control" name="minute"><option value="" disabled selected>分</option></select>
+            </div>
+            <hr>
+
+            <h5>Question</h5>
+            {{ form.as_p }}
+
+            <h5>Choices</h5>
+            {{ choice_formset.management_form }}
+                <div id="form-choice-area">
+                {% for choice_form in choice_formset %}
+                    {{ choice_form.as_p }}
+                {% endfor %}
+                </div>
+
+            {% csrf_token %}
+            <div id="add__area">
+                <a class="a__type1" href="#" id="add">+</a>
+            </div>
+            <hr>
+            <label class="__checkbox __show"><input type="checkbox" name="hide_name" value="hiding"><span class="description">匿名にする</span></label>
+            <button type="submit" class="form__submit">POST</button>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function() {
+    const secretStr = '{{ information.secret }}';
+    if (secretStr !== 'none') {
+         const secretList = secretStr.split('/');
+         for (let i = 0; i < secretList.length; i++) {
+             if (Number(secretList[i])) {
+                 $('div.secret__check span.__information').eq(i).css('color', 'hsl(0,0%,50%)');
+                 $('div.secret__check').eq(i).append('<span class="secret">(非公開)</span>');
+             }
+         }
+    }
+    $('span.secret').css({
+        'color': 'hsl(0,0%,50%)',
+        'float': 'right'
+    });
+
+    const profile = $('div.col-lg-7 div.sheet2');
+    const profileHeight = profile.height() + parseInt(profile.css('padding'), 10)*2;
+    {#console.log(profileHeight);#}
+    $('div.col-lg-5 div.sheet2').css({
+        height: `${profileHeight}px`
+    });
+
+    const imageWrapper = $('div#image__wrapper');
+    imageWrapper.css({
+        height: `${imageWrapper.width()}px`
+    });
+    const  image = $('img.user__icon');
+    if (image.width() >= image.height()) {
+        image.css({
+            height: '100%',
+            width: 'auto'
+        });
+    } else {
+        image.css({
+            height: 'auto',
+            width: '100%'
+        });
+    }
+
+    $('input[type="file"]').change(function() {
+        $('form#file').submit();
+    });
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $('span.question__delete a').click(function(e) {
+        e.preventDefault();
+        if($(this).hasClass('delete__ready')) {
+            $(this).closest('form.do__delete').submit();
+        }else {
+            $(this).addClass('delete__ready');
+            $(this).parent().children('.delete__warning').css('display', 'inline-block');
+        }
+     });
+
+    $('form.do__delete').submit(function(e) {
+        e.preventDefault();
+        $.ajax({
+            'url': '{% url 'cms:delete_question' %}',
+            'type': 'POST',
+            'data': $(this).serialize(),
+            'beforeSend': function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+             }}
+        }).done(function(response) {
+            const deletedQuestion = response.deleted_question;
+            $(`div.question-area#${deletedQuestion}`).closest('div.sheet').remove();
+        })
+    });
+
+    $('.delete__cancel').click(function(e) {
+        e.preventDefault();
+        $('span.question__delete a').removeClass('delete__ready');
+        $('.delete__warning').hide();
+    });
+
+    {#--------------------------- QUESTIONS -------------------------------------#}
+
+    $('.create__wrapper').prepend('<a class="form-open on__header" href="">質問する </a>');
+
+    function adjustImage() {
+        const imageWrapper = $('.image__wrapper');
+        imageWrapper.css({
+            height: `${imageWrapper.width()}px`
+        });
+
+        const image = $('img.user__icon');
+        if (image.width() >= image.height()) {
+            image.css({
+                height: '100%',
+                width: 'auto'
+            });
+        } else {
+            image.css({
+                height: 'auto',
+                width: '100%'
+            });
+        }
+    }
+
+    adjustImage();
+
+    $('label').hide();
+    $('label.__show').show();
+    $('textarea').attr('placeholder', '質問を入力してください');
+    for (let i = 0; i < 2; i++) {
+        $(`input#id_choices-${i}-choice`).attr({
+            'placeholder': `回答${i+1}`,
+            'autocomplete': 'off'
+        });
+    }
+
+    for (let i = 0; i < 4; i++) {
+        $('select[name="minute"]').append($('<option>').val(`${15*i}`).text(`${15*i}`).attr('size', '5'))
+    }
+    for (let i = 0; i < 24; i++) {
+        $('select[name="hour"]').append($('<option>').val(`${1*i}`).text(`${1*i}`))
+    }
+    for (let i = 0; i < 7; i++) {
+        $('select[name="day"]').append($('<option>').val(`${1*i}`).text(`${1*i}`))
+    }
+
+    $(document).on('click','div.question-area div.detail span.status', function() {
+        const questionPK = $(this).parents('div.question-area').attr('id');
+        if ($(this).attr('class') === 'status') {
+            $(`div#${questionPK}.choice-area`).hide();
+            $(`div.question-area#${questionPK}`).css({
+                height: '392px',
+            });
+            $(`div.question-area#${questionPK} p`).css({
+                height: 'calc(100% - 2em)',
+                overflow: 'scroll',
+                overflowX: 'hidden'
+            });
+            $(this).addClass('off');
+            $(this).html('隠す');
+            $(this).parent().children('.dot').hide();
+        } else {
+            $(`div#${questionPK}.choice-area`).show();
+            $(`div.question-area#${questionPK}`).css({
+                height: '190px',
+            });
+            $(`div.question-area#${questionPK} p`).css({
+                height: '100%',
+                overflow: 'hidden'
+            });
+            $(this).removeClass('off');
+            $(this).html('全て表示');
+            $(this).parent().children('.dot').show();
+        }
+    });
+
+    // {#$('a.choice').hover(#}
+    // {#    function() {#}
+    // {#        $(this).stop().animate({height: 'calc(0.5rem*2 + 1.5rem*2)'}, 100);#}
+    // {#    },#}
+    // {#    function() {#}
+    // {#        $(this).stop().animate({height: 'calc(0.5rem*2 + 1.5rem)'}, 100);#}
+    // {#    }#}
+    // {#);#}
+
+    $('form#create').submit(function(e) {
+        e.preventDefault();
+
+        const setChoicesHtml = $('input[name^="choices"][type="text"]');
+        let setChoices = [];
+        setChoicesHtml.each(function() {
+            let text = $(this).val();
+            if (!text.match(/\S/g)) {
+                text = "";
+            }
+            setChoices.push(text);
+        });
+        setChoices = setChoices.filter(Boolean);
+
+        const deadlineChecker = Number($('select[name="day"]').val() + $('select[name="hour"]').val() + $('select[name="minute"]').val());
+        console.log(deadlineChecker);
+
+        if (setChoices.length >= 2 && deadlineChecker) {
+            $.ajax({
+                'url': '{% url 'cms:form' %}',
+                'type': 'POST',
+                'data': $(this).serialize(),
+                'beforeSend': function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                 }}
+            }).done(function(response) {
+                $('.form__modal').fadeOut();
+                $('.container-fluid').attr('style', '');
+                $('html, body').prop({scrollTop: pos});
+                $('textarea').val('');
+                const choicesHtml = $('input[name^="choices"][type="text"]');
+                choicesHtml.each(function() {
+                   $(this).val('');
+                });
+                $('div#form-choice-area').popover('dispose');
+                $('select[name="minute"]').popover('dispose');
+
+                const created = response.created;
+                const problem = response.problem;
+                console.log(created);
+                console.log(problem);
+            })
+        } else if (setChoices.length >= 2) {
+            $('select[name="minute"]').popover({
+                content: '期間を指定してください',
+                placement: 'right',
+            });
+            $('select[name="minute"]').popover('show');
+        } else {
+            $('div#form-choice-area').popover({
+                content: '質問は２つ以上必要です',
+                placement: 'bottom',
+            });
+            $('div#form-choice-area').popover('show');
+        }
+    });
+
+    var deadlineList = [];
+    {% for deadline in deadlines %}
+        var endTime = new Date('{{ deadline }}');
+        deadlineList.push(endTime);
+    {% endfor %}
+
+    var localDeadlineList = [];
+    {% for local in local_deadlines %}
+        var localEndTime = new Date('{{ local }}');
+        localDeadlineList.push(localEndTime);
+    {% endfor %}
+
+    var addZero = function(n) {
+        return ('0' + n).slice(-2);
+    };
+
+    function countdownTimer(deadline, local, n) {
+        var nowTime = new Date();
+        if (nowTime > local) { //なぜかifではローカルタイムが考慮されない
+            $('.timer').eq(n).text('期限切れ');
+        } else {
+            var calc =  new Date(deadline - nowTime);//ここでは時間が合わせられる
+            var date = calc.getDate() - 1 ? calc.getDate() - 1 + '日' : ''; //? = if
+            var hours = calc.getHours() ? calc.getHours() + '時間' : '';
+            var minutes = addZero(calc.getMinutes()) + '分';
+            {#var seconds = addZero(calc.getSeconds()) + '秒';#}
+            $('.timer').eq(n).text(`${date + hours + minutes}`);
+        };
+    }
+
+    function repeater() {
+        for (let i = 0; i < deadlineList.length; i++) {
+            countdownTimer(deadlineList[i], localDeadlineList[i], i);
+        }
+    }
+    repeater();
+    setInterval(repeater, 60000);
+
+    var loadedCount = 0;
+    $('div#load__question a.load__active').click(function(e) {
+        e.preventDefault();
+        loadedCount += 1;
+
+        let displayedQuestionsPk = [];
+        $('div.choice-area').each(function() {
+            const pk = $(this).attr('id');
+            displayedQuestionsPk.push(pk);
+        });
+        const strDisplayedQuestionsPk = displayedQuestionsPk.join('/');
+
+        $.ajax({
+            'url': '{% url 'accounts:add' %}',
+            'type': 'GET',
+            'data': {
+                'loaded_count': loadedCount,
+                'displayed': strDisplayedQuestionsPk,
+            },
+            'dataType': 'json'
+        }).done(function(response) {
+            const zeroCheck = response.not_zero;
+            if (zeroCheck) {
+                const questionPkList = response.question_pk_list;
+                const textList = response.text_list;
+                const addDeadlineList = response.deadline_list;
+                const addLocalDeadlineList = response.local_deadline_list;
+                const userList = response.user_list;
+                const imageList = response.image_list;
+                const totalList = response.total_list;
+                const choicesList = response.choices_list;
+                const choicePksList = response.choice_pks_list;
+                const ratesList = response.rates_list;
+                const votedCheck = response.voted_check;
+                const votedChoicePks = response.voted_choice_pks;
+
+                for (let i = 0; i < questionPkList.length; i++) {
+                    $('div.base').append(`
+                        <div class="sheet col-xl-4 col-md-6">
+                          <div class="sheet-content shadow-sm rounded-lg">
+                            <div class="top-area">
+                              <span class="image__wrapper image__mini">
+                                <img class="user__icon img__${imageList[i]}" src="${imageList[i]}" />
+                              </span>
+                              <span class="nickname name__${userList[i]}">${userList[i]}</span>
+                                <span class="timer-wrapper mt-1">残り　<span class="timer"></span></span>
+                            </div>
+                            <div id="${questionPkList[i]}" class="question-area mt-2 mb-2">
+                              <p class="question-text">${textList[i]}</p>
+                                <div class="detail">
+                                    <span class="dot">...</span>
+                                    <span class="status">全て表示</span>
+                                </div>
+                            </div>
+                            <hr class="hr1">
+                            <div id="${questionPkList[i]}" class="choice-area">
+                            </div>
+                            <div id="${questionPkList[i]}" class="bottom__area">
+                              <span class="total">投票数 ${totalList[i]}</span>
+                            </div>
+                          </div>
+                        </div>
+                    `);
+                    var endTime = new Date(`${addDeadlineList[i]}`);
+                    deadlineList.push(endTime);
+                    var localEndTime = new Date(`${addLocalDeadlineList[i]}`);
+                    localDeadlineList.push(localEndTime);
+                    if (votedCheck[i]) {
+                        for (let j = 0; j < choicePksList[i].length; j++) {
+                            $(`div#${questionPkList[i]}.choice-area`).append(`
+                                <a href="#" id="${choicePksList[i][j]}" class="choice choice-${questionPkList[i]}">${choicesList[i][j]}</button>
+                            `)
+                        }
+                    } else {
+                        for (let j = 0; j < choicePksList[i].length; j++) {
+                            $(`div#${questionPkList[i]}.choice-area`).append(`
+                                <div class="result-area"  id="result__${choicePksList[i][j]}">
+                                    <span class="choice__text">${choicesList[i][j]}</span>
+                                    <span class="rate">${ratesList[i][j]}%</span>
+                                </div>
+                            `);
+                            const eachResultArea = $(`#result__${choicePksList[i][j]}`);
+                            if(votedChoicePks.indexOf(choicePksList[i][j]) !== -1 ) {
+                                eachResultArea.css({
+                                    'background': `linear-gradient(90deg,
+                                    hsla(180,60%,50%,1) 0%,hsla(180,60%,50%,1) ${ratesList[i][j]}%,
+                                    hsla(180,100%,98%,1) ${ratesList[i][j]}%,hsla(180,100%,98%,1) 100%)`
+                                });
+                            } else {
+                                eachResultArea.css({
+                                    'background': `linear-gradient(90deg,
+                                    hsla(200,30%,80%,1) 0%,hsla(200,30%,80%,1) ${ratesList[i][j]}%,
+                                    hsla(200,20%,98%,1) ${ratesList[i][j]}%,hsla(200,20%,98%,1) 100%)`
+                                });
+                            }
+                        }
+                    }
+                }
+                $('img.img__0').attr('src', '{% static 'img/person.png' %}');
+                $('span.name__hidden').text('誰かさん').css({'color': 'hsl(0,0%,50%)'});
+                adjustImage();
+                repeater();
+            }else {
+                $('div#load__question').empty();
+            }
+        })
+    });
+
+    // 後から追加した質問にも対応できる記述↓
+    $(document).on('click', 'a.choice', function(e) {
+        e.preventDefault();
+        const selectedPk = $(this).attr('id');
+        const questionPk = $(this).parents('div.choice-area').attr('id');
+        const choiceArea = $(`div#${questionPk}.choice-area`);
+        const choices = $(`a.choice-${questionPk}`);
+
+        $.ajax({
+            'url': '{% url 'cms:vote' %}',
+            'type': 'GET',
+            'data': {
+                'choice_pk': selectedPk,
+                'question_pk': questionPk,
+            },
+            'dataType': 'json'
+        }).done(function(response) {
+            choiceArea.empty();
+            const votesRateList = response.rates_list;
+            const total = response.total_num;
+            console.log(total);
+
+            $(`#${questionPk}.bottom__area`).children('.total').text(`投票数 ${total}`);
+
+            for (let i = 0; i < votesRateList.length; i++) {
+                const choiceText = choices.eq(i).text();
+                const choiceId = choices.eq(i).attr('id');
+                choiceArea.append(`
+                      <div class="result-area"  id="result__${choiceId}">
+                        <span class="choice__text">${choiceText}</span>
+                        <span style="float: right">${votesRateList[i]}%</span>
+                      </div>
+                `);
+                const eachResultArea = $(`#result__${choiceId}`);
+                if (choiceId === selectedPk ){
+                    eachResultArea.css({
+                    'background': `linear-gradient(90deg,
+                                    hsla(180,60%,50%,1) 0%,hsla(180,60%,50%,1) ${votesRateList[i]/2}%,
+                                    hsla(180,100%,98%,1) ${votesRateList[i]/2}%,hsla(180,100%,98%,1) 100%)`,
+                    'background-size': `200% 100%`,
+                    'animation': 'graph 1s ease 1 forwards'
+                    });
+                } else {
+                    eachResultArea.css({
+                    'background': `linear-gradient(90deg,
+                                    hsla(200,30%,80%,1) 0%,hsla(200,30%,80%,1) ${votesRateList[i]/2}%,
+                                    hsla(200,20%,98%,1) ${votesRateList[i]/2}%,hsla(200,20%,98%,1) 100%)`,
+                    'background-size': `200% 100%`,
+                    'animation': 'graph 1s ease 1 forwards'
+                    });
+                }
+            }
+        })
+    });
+
+    var totalForms = $('input#id_choices-TOTAL_FORMS');
+    var currentChoicesCount = parseInt(totalForms.val());
+    $('a#add').click(function(e) {
+        e.preventDefault();
+        var setChoice = $('input.form-control');
+        var name = setChoice.eq(1).attr('name').split('-');
+        const partA = name[0];
+        const partB = name[2];
+
+        var extraChoice = $('<input>', {
+            type: 'text',
+            maxlength: setChoice.eq(1).attr('maxlength'),
+            name: partA + '-' + currentChoicesCount + '-' + partB,
+            id: 'id_' + partA + '-' + currentChoicesCount + '-' + partB,
+            class: 'form-control',
+            placeholder: `回答${currentChoicesCount+1}`,
+            autocomplete: 'off'
+        });
+        extraChoice.css({
+            'margin-bottom': '16px'
+        });
+
+        $('#form-choice-area').append(extraChoice);
+        currentChoicesCount += 1;
+        if (currentChoicesCount === 4) {
+            $('div#add__area').remove();
+        }
+        totalForms.attr('value', currentChoicesCount);
+    });
+
+    function modalOpen(modal) {
+        $(modal).fadeIn();
+        pos = $(window).scrollTop();
+        $('.container-fluid').css({
+            'position': 'fixed',
+            'top': -1 * pos
+        })
+    }
+
+    function modalClose(modal) {
+        $(modal).fadeOut();
+        $('.container-fluid').attr('style', '');
+        $('html, body').prop({scrollTop: pos});
+    }
+
+    $('.form-open').on('click',function(e){
+        e.preventDefault();
+        modalOpen('.form__modal');
+    });
+
+    $('.modal__bg, .form__close').on('click',function(e){
+        e.preventDefault();
+        modalClose('.__modal');
+        $('div#form-choice-area').popover('dispose');
+        $('select[name="minute"]').popover('dispose');
+    });
+})
+</script>
 {% endblock %}

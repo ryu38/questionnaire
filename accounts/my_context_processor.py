@@ -8,8 +8,7 @@ def common(request):
         else:
             new_information = UserInformation()
             new_information.user = request.user
-            new_information.age = '非公開'
-            new_information.sex = '非公開'
+            new_information.nickname = request.user.username
             new_information.save()
             information = UserInformation.objects.get(user=request.user)
         return {'user_information': information}

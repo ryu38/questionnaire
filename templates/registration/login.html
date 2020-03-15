@@ -2,39 +2,37 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/login.css' %}">
+<link rel="stylesheet" href="{% static 'css/login2.css' %}">
 {% endblock %}
 
 {% block content %}
 
-{% if next %}
+<div class="modal__ct shadow-sm">
+    <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <div id="logo">
+        <img src="{% static 'img/quiction.png' %}">
+    </div>
+    <hr>
+    {% if form.errors %}
+        <p class="error__massage">ユーザー名またはパスワードが違います。</p>
+    {% endif %}
+    {% if next %}
     {% if user.is_authenticated %}
     <p>Your account doesn't have access to this page. To proceed,
     please login with an account that has access.</p>
     {% else %}
     <p>Please login to see this page.</p>
     {% endif %}
-{% endif %}
-
-<div class="__modal">
-    <div class="modal__ct shadow-sm">
-        <form method="post" action="{% url 'login' %}">
-        {% csrf_token %}
-        <div id="logo">
-            <img src="{% static 'img/quiction.png' %}">
-        </div>
-        <hr>
-        {% if form.errors %}
-            <p class="error__massage">ユーザー名またはパスワードが違います。</p>
-        {% endif %}
-        {{ form.username }}
-        {{ form.password }}
-        <hr>
-        <button type="submit" class="form__submit">LOGIN</button>
-        <input type="hidden" name="next" value="{{ next }}" />
-        </form>
-    </div>
+    {% endif %}
+    {{ form.username }}
+    {{ form.password }}
+    <hr>
+    <button type="submit" class="form__submit">LOGIN</button>
+    <input type="hidden" name="next" value="{{ next }}" />
+    </form>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
