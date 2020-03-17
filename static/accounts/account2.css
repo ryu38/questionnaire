@@ -1,0 +1,567 @@
+.container-fluid {
+    margin-top: 65px;
+}
+
+.sheet__base {
+    padding: 12px 0;
+}
+
+.sheet2 {
+    background: #fff;
+    padding: 40px;
+
+}
+
+h1 {
+    text-align: center;
+}
+
+/*div#image__wrapper:before {*/
+/*    content: "";*/
+/*    display: block;*/
+/*    padding-top: 100%;*/
+/*}*/
+
+/*http://minegishi.mods.jp/blog/?p=469 position&overflow解説*/
+div#image__wrapper {
+    position: relative;
+    overflow: hidden;
+    width: 250px;
+    border-radius: 50%;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+img.user__icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+input#id_image, button[type="submit"] {
+    display: none;
+}
+
+label[for="id_image"] {
+    float: right;
+    background: hsl(0, 0%, 50%);
+    border: solid 1px hsl(0, 0%, 100%);
+    width: 2.4em;
+    height: 2.4em;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: .1s;
+}
+label[for="id_image"] > p {
+    color: hsl(0,0%,100%);
+    text-align: center;
+    line-height: 2em;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+/* 2.4 = 1.3 x line-height(2) */
+
+label[for="id_image"]:hover {
+    background: hsl(180,50%,50%);
+    border: solid 1px hsl(180,50%,50%);
+
+}
+
+.__label {
+    color: hsl(0,0%,50%);
+}
+
+.__information {
+    position: absolute;
+    left: 8em;
+}
+
+div#to__edit {
+    text-align: right;
+}
+
+div#to__edit a {
+    color: hsl(0,0%,50%);
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+div#to__edit a:hover {
+    color: hsl(180,60%,50%);
+}
+
+div.__title {
+    display: flex;
+    align-items: center;
+    color: hsl(0,0%,50%);
+    font-size: 2em;
+    margin: 0.8em 0 0.2em 0;
+}
+
+div.__title:before, div.__title:after {
+    content: "";
+    border-top: solid 1px hsl(0,0%,70%);
+    flex-grow: 1;
+}
+
+div.__title:before {
+    margin-right: 1rem;
+}
+
+div.__title:after {
+    margin-left: 1rem;
+}
+
+/*--------------- YOUR QUESTION ------------------*/
+
+.container-fluid {
+    margin-top: 60px;
+}
+
+.sheet {
+    padding: 12px;
+    height: 572px
+}
+
+.sheet-content {
+    padding: 15px;
+    height: 100%;
+    background-color: hsla(0,0%,100%,1);
+    /*border-bottom: solid 1px #87CEFA*/
+}
+
+.top-area {
+    position: relative;
+    height: 8%;
+}
+
+.image__wrapper.image__mini {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 40px;
+    border-radius: 50%;
+    left: 0;
+    transform: translate(0, 0);
+    background: hsl(0,0%,90%);
+}
+
+img.user__icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.nickname {
+    position: absolute;
+    display: inline-block;
+    top: 50%;
+    transform: translate(0, -50%);
+    padding-left: 0.8em;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.timer-wrapper {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(0, -50%);
+    font-size: 0.8em
+}
+
+.question-area {
+    position: relative;
+    /*overflow: hidden;*/
+    word-wrap: break-word;
+    height: 190px;
+}
+
+.question-area>p {
+    height: 100%;
+    overflow: hidden;
+    font-size: 0.9em;
+    white-space: pre-wrap;
+}
+
+div.detail {
+    /*display: block;*/
+    color: hsl(0,0%,60%);
+    width: auto;
+    /*height: 1em;*/
+    background: white;
+    position: absolute;
+    bottom: 0.15em;
+    right: 0;
+    text-align: right;
+    padding-right: 0.6em;
+    line-height: 1;
+    /*box-shadow: 0 0 5px 12px hsla(0,0%,100%,1);*/
+}
+
+span.dot {
+    color: hsl(0,0%,30%);
+    display: inline-block;
+    padding-left: 0.3rem;
+    font-size: 1.1em;
+    width: 1.5rem;
+    cursor: default;
+    text-align: left;
+}
+
+span.status {
+    cursor: pointer;
+    font-size: 0.7em;
+}
+
+span.status:hover {
+    color: hsl(180,50%,60%);
+}
+
+/*.question-area:after {*/
+/*    content: "...";*/
+/*    position: absolute;*/
+/*    right: 0;*/
+/*    bottom: 0;*/
+/*}*/
+
+hr.hr1 {
+    border-top: solid 1px #A9A9A9;
+}
+
+#load__question {
+    position: relative;
+    line-height: 1;
+}
+
+#load__question a {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -20%);
+    display: block;
+    font-size: 3em;
+    border-bottom: solid 1px hsl(0,0%,50%);
+    text-align: center;
+    width: 8rem;
+    height: 3rem;
+    margin-bottom: 1rem;
+    transition: .1s;
+}
+
+#load__question a:hover {
+    border-bottom: solid 3px hsl(180,50%,60%);
+}
+
+.__modal {
+    display: none;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+}
+
+.modal__bg {
+    background: rgba(0,0,0,0.8);
+    height: 100vh;
+    position: absolute;
+    width: 100%;
+    display: none;
+}
+
+.modal__ct {
+    background: #fff;
+    left: 50%;
+    padding: 40px;
+    position: relative;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    z-index: 1;
+    max-height: 100%;
+    height: 100%;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+form#create {
+    position: relative;
+}
+
+@media (min-width: 576px) {
+    .modal__ct {
+        width: 60%;
+        min-width: 576px;
+        height: auto;
+    }
+    .modal__bg {
+        display: block;
+    }
+}
+
+div.form__close {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+div.form__close a {
+    font-size: 2em;
+    line-height: 1;
+    color: hsl(0,0%,70%);
+}
+
+div.form__close a:hover {
+    color: hsl(0,0%,25%);
+}
+
+a.a__type1 {
+    text-decoration: none;
+    color: hsla(180,0%,50%,1);
+    font-weight: bolder;
+    transition: .1s;
+}
+
+a.a__type1:hover {
+    color: hsla(180,60%,50%,1);
+}
+
+a#add {
+    position: relative;
+    top: -25px;
+    font-size: 3em;
+}
+
+/*button {*/
+/*    background-color: transparent;*/
+/*    border: none;*/
+/*    cursor: pointer;*/
+/*    outline: none;*/
+/*    padding: 0;*/
+/*    appearance: none;*/
+/*    -webkit-appearance: none;*/
+/*}*/
+
+.choice-area {
+    height: 202px;
+}
+
+a.choice {
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    font-size: 1rem;
+    /*height: calc(0.5rem*2 + 1.5rem);*/
+    border-left: solid 0.1rem hsla(200,30%,70%,1);
+    color: hsla(180,0%,50%,1);
+    background: hsla(200,20%,98%,1);
+    transition: .1s;
+    margin-top: 0.7rem;
+    font-weight: lighter;
+
+    /*ボタン用*/
+    /*width: 100%;*/
+    /*text-align: left;*/
+}
+
+a.choice:hover {
+    /*background: hsla(180,60%,50%,1);*/
+    color: hsla(180,60%,50%,1);
+    border-left: solid 0.3rem hsla(180,60%,50%,1);
+    padding: 0.5rem 1rem 0.5rem 0.8rem;
+    background-color: hsla(180,100%,98%,1);
+    white-space: normal;
+    /*height: calc(0.5rem*2 + 1.5rem*2);*/
+}
+
+.result-area {
+    position: relative;
+    padding: 0.3em 1em 0.3em 1.1em;
+    color: hsla(180,0%,30%,1);
+    margin-top: 1.1em;
+    font-weight: lighter;
+    /*height: calc(0.3em*2 + 1.5em);*/
+    line-height: 1.5em;
+    transition: .1s;
+    /*animation: graph 3s ease 1 forwards;*/
+    /*background:linear-gradient(90deg,*/
+    /*                        hsla(200,30%,80%,1) 0%,hsla(200,30%,80%,1) 50%,*/
+    /*                        hsla(200,20%,98%,1) 50%,hsla(200,20%,98%,1) 100%);*/
+    /*background-size: 200% 100%;*/
+}
+
+span.choice__text {
+    font-size: 0.9em;
+    display: inline-block;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: calc(100% - 3rem);
+    vertical-align: bottom;
+    /*height: 1rem;*/
+}
+
+.result-area:hover {
+    /*height: calc(0.3em*2 + 1.5em*2);*/
+    padding: 0.3em 1em 0.5em 1.1em ;
+    box-shadow: 0 0 12px 2px hsla(0,0%,70%,0.5);
+}
+
+.result-area:hover .choice__text {
+    white-space: normal;
+    /*color: black;*/
+}
+
+span.rate {
+    float: right
+}
+
+@-webkit-keyframes graph {
+    0% {background-position: 100% 0}
+    100% {background-position: 0 0}
+}
+
+div.bottom__area {
+    position: relative;
+    bottom: 0;
+    height: 8%;
+}
+
+.total {
+    position: absolute;
+    font-size: 0.8em;
+    bottom: 0;
+}
+
+div#add__area {
+    height: 30px;
+}
+
+button.form__submit {
+    padding: 0.5em 1em;
+    text-decoration: none;
+    border: solid 0.1em hsla(180,60%,50%,1);
+    color: hsla(180,60%,50%,1);
+    background: hsla(180,0%,100%,1);
+    transition: .1s;
+    font-weight: lighter;
+    display: block;
+    /*右寄せ*/
+    margin: 0.7em 0 0 auto;
+}
+
+button.form__submit:hover {
+    /*color: hsla(180,60%,50%,1);*/
+    /*border-left: solid 0.3em hsla(180,60%,50%,1);*/
+    /*padding: 0.5em 1em 0.5em 0.8em;*/
+    /*background-color: hsla(180,100%,98%,1);*/
+    color: hsla(0,0%,100%,1);
+    background-color: hsla(180,60%,50%,1);
+    border-color: hsla(180,60%,50%,1);
+}
+
+div#deadline {
+    margin-bottom: 1em;
+}
+
+div#deadline span {
+    margin-right: 1em;
+    display: inline-block;
+}
+
+div#deadline select.form-control {
+    display: inline-block;
+    width: auto;
+}
+
+.__checkbox {
+    font-size: 0.8em;
+    /*padding-left: 1em;*/
+    float: left;
+    margin-top: 12px;
+}
+
+.__checkbox input {
+    display: none;
+}
+
+.description{
+  padding-left: 20px;
+  position:relative;
+}
+
+/*チェックボックス*/
+.description::before{
+  content: "";
+  display: block;
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  width: 13px;
+  height: 13px;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+.description:hover{
+  color: hsl(180,60%,50%);
+}
+
+/*チェックサイン*/
+.__checkbox input:checked + .description::after{
+  content: "";
+  display: block;
+  position: absolute;
+  top: -3px;
+  left: 9px;
+  width: 7px;
+  height: 13px;
+  transform: rotate(40deg);
+  border-bottom: 3px solid hsl(180,60%,50%);
+  border-right: 3px solid hsl(180,60%,50%);
+}
+
+/*-------------- delete function ----------------------*/
+
+.question__delete {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    font-size: 1.2em;
+}
+
+.question__delete a:hover {
+    color: hsl(0,50%,60%);
+}
+
+.delete__warning {
+    display: none;
+    color: hsl(0,50%,60%);
+    font-size: .8rem;
+    margin-right: .5rem;
+}
+
+a.delete__cancel {
+    /*display: block;*/
+    font-size: 1.1rem;
+    line-height: 1;
+    padding-right: .3rem;
+    color: hsl(0,0%,50%);
+    vertical-align: top; /* 中央寄せ */
+}
+
+a.delete__cancel:hover {
+    color: black;
+}
+
+a.delete__ready {
+    color: hsl(0,50%,60%);
+}
