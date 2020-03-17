@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect, render_to_response
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, TemplateView
 from cms.models import Question, Choice, Like, Vote
 from django.contrib.auth.decorators import login_required
