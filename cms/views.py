@@ -51,9 +51,8 @@ class QuestionList(TemplateView):
         keyword = self.request.GET.get('query')
         filtering = self.request.GET.get('filter')
 
-        if filtering:
-            if filtering == 'voted':
-                filter_question = ctx['voted_questions']
+        if filtering == 'voted':
+            filter_question = ctx['voted_questions']
             display_questions = Question.objects.filter(pk__in=filter_question).order_by('-date_created').prefetch_related('choices')[:6]
 
         elif keyword:
@@ -168,9 +167,9 @@ def add_question(request):
     else:
         voted_questions = []
 
-    if filtering:
-        if filtering == 'voted':
-            filter_question = voted_questions
+
+    if filtering == 'voted':
+        filter_question = voted_questions
         additional_questions = Question.objects.filter(pk__in=filter_question).exclude(pk__in=displayed_questions_pk).order_by('-date_created').prefetch_related(
             'choices')[:6]
 

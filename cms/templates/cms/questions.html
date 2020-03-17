@@ -145,17 +145,19 @@ $(function() {
         });
 
         const image = $('img.user__icon');
-        if (image.width() >= image.height()) {
-            image.css({
-                height: '100%',
-                width: 'auto'
-            });
-        } else {
-            image.css({
-                height: 'auto',
-                width: '100%'
-            });
-        }
+        image.each(function() {
+            if ($(this).width() >= $(this).height()) {
+                $(this).css({
+                    height: '100%',
+                    width: 'auto'
+                });
+            } else {
+                $(this).css({
+                    height: 'auto',
+                    width: '100%'
+                });
+            }
+        })
     }
 
     adjustImage();

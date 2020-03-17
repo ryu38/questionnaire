@@ -2,41 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7ef11c7-2b35-448c-b1fb-2ec8a1d80873" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/accounts/static/accounts/account2.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/accounts/static/accounts/edit_information.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/accounts/templates/accounts/edit_information.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cms/static/cms/questions2.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/css/base2.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/img/person.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/img/search.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/my_context_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/my_context_processor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/static/accounts/account.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/static/accounts/signup2.css" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/static/accounts/signup.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/templates/accounts/account.html" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/templates/accounts/account.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/templates/accounts/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/templates/accounts/signup.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/album/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/form.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/album/admin.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/album/apps.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/album/migrations/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/album/models.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/album/tests.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/album/views.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cms/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/cms/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cms/static/cms/questions.css" beforeDir="false" afterPath="$PROJECT_DIR$/cms/static/cms/questions.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cms/templates/cms/questions.html" beforeDir="false" afterPath="$PROJECT_DIR$/cms/templates/cms/questions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cms/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/cms/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cms/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/cms/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/questionnaire/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/questionnaire/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/questionnaire/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/questionnaire/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/base.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/login2.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/registration/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/registration/login.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -147,7 +115,8 @@
       <workItem from="1581922818640" duration="284665000" />
       <workItem from="1583388755794" duration="55609000" />
       <workItem from="1583639872115" duration="171707000" />
-      <workItem from="1584163161089" duration="71802000" />
+      <workItem from="1584163161089" duration="72312000" />
+      <workItem from="1584324487674" duration="4236000" />
     </task>
     <servers />
   </component>
