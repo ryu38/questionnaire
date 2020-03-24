@@ -48,11 +48,9 @@
             <hr class="hr1">
             <div id="{{ question.pk }}" class="choice-area">
                 {% if question.pk|votes_check:voted_questions %}
-{#                  <div class="btn-group-vertical" role="group">#}
                     {% for answer in question.choices.all %}
                         <a href="#" id="{{ answer.pk }}" class="choice choice-{{ question.pk }}">{{ answer.choice }}</a>
                     {% endfor %}
-{#                  </div>#}
                 {% else %}
                     {% for answer in question.choices.all %}
                         {% if answer.pk|your_vote:voted_choices %}
@@ -73,7 +71,6 @@
                             </div>
                     {% endfor %}
                 {% endif %}
-{#                <a href="{% url 'cms:like' question.pk %}" class="btn btn-secondary btn-sm">いいね！</a>#}
             </div>
             <div id="{{ question.pk }}" class="bottom__area">
               <span class="total">投票数 {{ total }}</span>
@@ -130,6 +127,8 @@
 {% block extra_js %}
 <script>
 $(function() {
+
+    {#作成フォーム表示許可#}
     {% if user.is_authenticated %}
         $('.create__wrapper').prepend('<a class="form-open on__header" href="">質問する </a>');
     {% else %}
@@ -138,6 +137,7 @@ $(function() {
         $('div#load__question a').attr('href', '{% url 'accounts:signup' %}').removeClass('load__active');
     {% endif %}
 
+    {#ユーザーアイコン調整#}
     function adjustImage() {
         const imageWrapper = $('.image__wrapper');
         imageWrapper.css({
@@ -162,6 +162,7 @@ $(function() {
 
     adjustImage();
 
+    {#フォームの表示調整#}
     $('label').hide();
     $('label.__show').show();
     $('textarea').attr('placeholder', '質問を入力してください');
@@ -172,6 +173,7 @@ $(function() {
         });
     }
 
+    {#期限リスト#}
     for (let i = 0; i < 4; i++) {
         $('select[name="minute"]').append($('<option>').val(`${15*i}`).text(`${15*i}`).attr('size', '5'))
     }
@@ -182,6 +184,7 @@ $(function() {
         $('select[name="day"]').append($('<option>').val(`${1*i}`).text(`${1*i}`))
     }
 
+    {#質問文表示調整#}
     $(document).on('click','div.question-area div.detail span.status', function() {
         const questionPK = $(this).parents('div.question-area').attr('id');
         if ($(this).attr('class') === 'status') {
@@ -212,15 +215,7 @@ $(function() {
         }
     });
 
-    // {#$('a.choice').hover(#}
-    // {#    function() {#}
-    // {#        $(this).stop().animate({height: 'calc(0.5rem*2 + 1.5rem*2)'}, 100);#}
-    // {#    },#}
-    // {#    function() {#}
-    // {#        $(this).stop().animate({height: 'calc(0.5rem*2 + 1.5rem)'}, 100);#}
-    // {#    }#}
-    // {#);#}
-
+    {#質問作成#}
     function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -259,7 +254,6 @@ $(function() {
         setChoices = setChoices.filter(Boolean);
 
         const deadlineChecker = Number($('select[name="day"]').val() + $('select[name="hour"]').val() + $('select[name="minute"]').val());
-        console.log(deadlineChecker);
 
         if (setChoices.length >= 2 && deadlineChecker) {
             $.ajax({
@@ -284,8 +278,6 @@ $(function() {
 
                 const created = response.created;
                 const problem = response.problem;
-                console.log(created);
-                console.log(problem);
             })
         } else if (setChoices.length >= 2) {
             $('select[name="minute"]').popover({
@@ -302,6 +294,7 @@ $(function() {
         }
     });
 
+    {#残り時間#}
     var deadlineList = [];
     {% for deadline in deadlines %}
         var endTime = new Date('{{ deadline }}');
@@ -340,6 +333,7 @@ $(function() {
     repeater();
     setInterval(repeater, 60000);
 
+    {#質問追加読み込み#}
     var loadedCount = 0;
     $('div#load__question a.load__active').click(function(e) {
         e.preventDefault();
@@ -450,6 +444,7 @@ $(function() {
         })
     });
 
+    {#投票機能#}
     // 後から追加した質問にも対応できる記述↓
     $(document).on('click', 'a.choice', function(e) {
         e.preventDefault();
@@ -470,7 +465,6 @@ $(function() {
             choiceArea.empty();
             const votesRateList = response.rates_list;
             const total = response.total_num;
-            console.log(total);
 
             $(`#${questionPk}.bottom__area`).children('.total').text(`投票数 ${total}`);
 
@@ -505,6 +499,7 @@ $(function() {
         })
     });
 
+    {#選択を追加#}
     var totalForms = $('input#id_choices-TOTAL_FORMS');
     var currentChoicesCount = parseInt(totalForms.val());
     $('a#add').click(function(e) {
@@ -535,6 +530,7 @@ $(function() {
         totalForms.attr('value', currentChoicesCount);
     });
 
+    {#フォーム表示/非表示#}
     function modalOpen(modal) {
         $(modal).fadeIn();
         pos = $(window).scrollTop();

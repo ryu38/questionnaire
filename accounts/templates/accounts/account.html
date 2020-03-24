@@ -194,7 +194,6 @@ $(function() {
 
     const profile = $('div.col-lg-7 div.sheet2');
     const profileHeight = profile.height() + parseInt(profile.css('padding'), 10)*2;
-    {#console.log(profileHeight);#}
     $('div.col-lg-5 div.sheet2').css({
         height: `${profileHeight}px`
     });
@@ -351,15 +350,6 @@ $(function() {
         }
     });
 
-    // {#$('a.choice').hover(#}
-    // {#    function() {#}
-    // {#        $(this).stop().animate({height: 'calc(0.5rem*2 + 1.5rem*2)'}, 100);#}
-    // {#    },#}
-    // {#    function() {#}
-    // {#        $(this).stop().animate({height: 'calc(0.5rem*2 + 1.5rem)'}, 100);#}
-    // {#    }#}
-    // {#);#}
-
     $('form#create').submit(function(e) {
         e.preventDefault();
 
@@ -375,7 +365,6 @@ $(function() {
         setChoices = setChoices.filter(Boolean);
 
         const deadlineChecker = Number($('select[name="day"]').val() + $('select[name="hour"]').val() + $('select[name="minute"]').val());
-        console.log(deadlineChecker);
 
         if (setChoices.length >= 2 && deadlineChecker) {
             $.ajax({
@@ -400,8 +389,6 @@ $(function() {
 
                 const created = response.created;
                 const problem = response.problem;
-                console.log(created);
-                console.log(problem);
             })
         } else if (setChoices.length >= 2) {
             $('select[name="minute"]').popover({
@@ -584,7 +571,6 @@ $(function() {
             choiceArea.empty();
             const votesRateList = response.rates_list;
             const total = response.total_num;
-            console.log(total);
 
             $(`#${questionPk}.bottom__area`).children('.total').text(`投票数 ${total}`);
 

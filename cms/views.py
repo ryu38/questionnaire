@@ -90,21 +90,6 @@ class QuestionList(TemplateView):
 
 
 def create(request):
-    # HttpResponse('ok')
-    # print(request.POST)
-    # # question = Question()
-    # # question.text = question_text
-    # # question.user = request
-    # # question.save()
-    # #
-    # # created_question = Question.objects.get(user=request.user)
-    # #
-    # # for answer in choices:
-    # #     choice = Choice()
-    # #     choice.choice = answer
-    # #     choice.question = created_question
-    # #     choice.save()
-    #
     form = QuestionForm(request.POST)
     if form.is_valid():
         question = form.save(commit=False)
@@ -121,7 +106,6 @@ def create(request):
                 question.hide_name = True
             question.save()
             choice_formset.save()
-            print('成功！')
             ctx = {
                 'created': 1,
                 'problem': 0
@@ -137,7 +121,6 @@ def create(request):
         'created': 0,
         'problem': problem
     }
-    print('失敗！')
 
     return JsonResponse(ctx)
 
@@ -358,75 +341,50 @@ class UsersQuestionList(TemplateView):
         return ctx
 
 
-def test(request):
-    queryset = list(Vote.objects.filter(user=request.user).values_list('question_id', flat=True))
-    print(queryset)
-    return HttpResponse('')
+# 以下未使用
+# def test(request): テスト用
+#     queryset = list(Vote.objects.filter(user=request.user).values_list('question_id', flat=True))
+#     print(queryset)
+#     return HttpResponse('')
 
 
-@login_required
-def like(request, pk):
-    question = get_object_or_404(Question, pk=pk)
-    liking = Like.objects.filter(user=request.user).filter(question=question)
-    like_check = liking.count()
-
-    if like_check > 0:
-        liking.delete()
-        question.like_num -= 1
-        question.save()
-        messages.success(request, 'いいね！を取り消しました')
-        return redirect(reverse_lazy('cms:question_list'))
-
-    question.like_num += 1
-    question.save()
-    like = Like()
-    like.user = request.user
-    like.question = question
-    like.save()
-    messages.success(request, 'いいね！しました')
-    return redirect(reverse_lazy('cms:question_list'))
-
-
-def create_question(request):
-    print(request.POST)
-    form = QuestionForm(request.POST or None,
-                        # initial={'date_created': 'something'}
-                        )
-    context = {'form': form}
-    # Spdb.set_trace()
-    if request.method == 'POST' and form.is_valid():
-
-        question = form.save(commit=False)
-        choice_formset = ChoiceFormset(request.POST, instance=question)
-        if choice_formset.is_valid():
-            question.user = request.user
-            question.save()
-            choice_formset.save()
-            return redirect(reverse_lazy('cms:question_list'))
-
-        else:
-            context['choice_formset'] = choice_formset
-
-    else:
-        context['choice_formset'] = ChoiceFormset()
-
-    return render(request, 'cms/create.html', context)
+# @login_required
+# def like(request, pk):　いいね機能
+#     question = get_object_or_404(Question, pk=pk)
+#     liking = Like.objects.filter(user=request.user).filter(question=question)
+#     like_check = liking.count()
+#
+#     if like_check > 0:
+#         liking.delete()
+#         question.like_num -= 1
+#         question.save()
+#         messages.success(request, 'いいね！を取り消しました')
+#         return redirect(reverse_lazy('cms:question_list'))
+#
+#     question.like_num += 1
+#     question.save()
+#     like = Like()
+#     like.user = request.user
+#     like.question = question
+#     like.save()
+#     messages.success(request, 'いいね！しました')
+#     return redirect(reverse_lazy('cms:question_list'))
 
 
-class LikedList(LoginRequiredMixin, ListView):
-    model = Like
-    context_object_name = 'favorites'
-    template_name = 'cms/favorite.html'
-
-    def get_queryset(self):
-        return Like.objects.all().select_related()
-
-    def get_context_data(self, **kwargs):
-        ctx = super(LikedList, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            voted_questions = Vote.objects.filter(user=self.request.user).values_list('question_id', flat=True)
-            ctx['voted_questions'] = list(voted_questions)
-        else:
-            ctx['voted_questions'] = []
-
-        return ctx
+# class LikedList(LoginRequiredMixin, ListView):　いいねリスト
+#     model = Like
+#     context_object_name = 'favorites'
+#     template_name = 'cms/favorite.html'
+#
+#     def get_queryset(self):
+#         return Like.objects.all().select_related()
+#
+#     def get_context_data(self, **kwargs):
+#         ctx = super(LikedList, self).get_context_data(**kwargs)
+#         if self.request.user.is_authenticated:
+#             voted_questions = Vote.objects.filter(user=self.request.user).values_list('question_id', flat=True)
+#             ctx['voted_questions'] = list(voted_questions)
+#         else:
+#             ctx['voted_questions'] = []
+#
+#         return ctx
